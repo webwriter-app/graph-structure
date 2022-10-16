@@ -1,0 +1,24 @@
+{
+  "scripts": {
+    "dev": "vite --open",
+    "build": "vite build"
+  },
+  "dependencies": {
+    "@antv/g6": "^4.7.8",
+    "@webwriter/lit": "latest",
+    "d3": "^7.6.1",
+    "lit": "^2.4.0"
+  },
+  "devDependencies": {
+    "typescript": "^4.8.4",
+    "vite": "^3.1.6"
+  },
+  "name": "graph-viz",
+  "version": "0.1.0",
+  "description": "",
+  "keywords": [
+    "webwriter"
+  ],
+  "author": "Ferdinand Baumgarten <ferdinand.baumgarten@rwth-aachen.de>",
+  "license": "MIT"
+}
