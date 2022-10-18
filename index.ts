@@ -1,6 +1,6 @@
 import { LitElementWw } from "@webwriter/lit";
 import { html } from "lit";
-import { customElement } from "lit/decorators.js";
+import { customElement, state } from "lit/decorators.js";
 import { property } from "lit/decorators/property.js";
 
 import * as d3 from "d3";
@@ -25,7 +25,7 @@ const data = {
     },
     {
       name: "D",
-      x: 300,
+      x: 400,
       y: 180,
     },
   ],
@@ -50,55 +50,124 @@ const c10 = d3.scaleOrdinal(d3.schemeCategory10);
 @customElement("graph-viz")
 export class GraphViz extends LitElementWw {
   @property() width: number = 960;
-  @property() height: number = 500;
+  @property() height: number = 600;
+  @state() test: number = 1;
 
-  updated() {
+  firstUpdated() {
     let svg = select(this.shadowRoot.querySelectorAll(".chart")[0])
       .attr("width", this.width)
       .attr("height", this.height);
-    this.buildChart(svg);
+    this.buildChart(svg, this);
   }
 
-  buildChart(svg) {
-    var links = svg
-      .selectAll("link")
-      .data(data.links)
+  buildChart(svg, comp) {
+    //intialize data
+    var graph = {
+      nodes: [
+        { name: "Ina" },
+        { name: "Bob" },
+        { name: "Chen" },
+        { name: "Dawg" },
+        { name: "Ethan" },
+        { name: "George" },
+        { name: "Frank" },
+        { name: "Hanes" },
+      ],
+      links: [
+        { source: "Ina", target: "Bob" },
+        { source: "Chen", target: "Bob" },
+        { source: "Dawg", target: "Chen" },
+        { source: "Hanes", target: "Frank" },
+        { source: "Hanes", target: "George" },
+        { source: "Dawg", target: "Ethan" },
+      ],
+    };
+
+    var simulation = d3
+      .forceSimulation(graph.nodes)
+      .force(
+        "link",
+        d3
+          .forceLink()
+          .id(function (d) {
+            return d.name;
+          })
+          .links(graph.links)
+      )
+
+      .force("charge", d3.forceManyBody().strength(-300))
+      .force("center", d3.forceCenter(this.width / 2, this.height / 2))
+      .on("tick", ticked);
+
+    var link = svg
+      .append("g")
+      .attr("class", "links")
+      .selectAll("line")
+      .data(graph.links)
       .enter()
       .append("line")
-      .attr("class", "link")
-      .attr("x1", function (l) {
-        var sourceNode = data.nodes.filter(function (d, i) {
-          return i == l.source;
-        })[0];
-        d3.select(this).attr("y1", sourceNode.y);
-        return sourceNode.x;
-      })
-      .attr("x2", function (l) {
-        var targetNode = data.nodes.filter(function (d, i) {
-          return i == l.target;
-        })[0];
-        d3.select(this).attr("y2", targetNode.y);
-        return targetNode.x;
-      })
-      .attr("fill", "none")
-      .attr("stroke", "white");
+      .attr("stroke", "black")
+      .attr("stroke-width", function (d) {
+        return 3;
+      });
 
-    var nodes = svg
-      .selectAll("node")
-      .data(data.nodes)
+    var node = svg
+      .append("g")
+      .attr("class", "nodes")
+      .selectAll("circle")
+      .data(graph.nodes)
       .enter()
       .append("circle")
-      .attr("class", "node")
-      .attr("cx", function (d) {
-        return d.x;
-      })
-      .attr("cy", function (d) {
-        return d.y;
-      })
-      .attr("r", 15)
-      .attr("fill", function (d, i) {
-        return c10(i);
-      });
+      .attr("r", 5)
+      .attr("fill", "red")
+      .call(
+        d3
+          .drag()
+          .on("start", dragstarted)
+          .on("drag", dragged)
+          .on("end", dragended)
+      );
+
+    function ticked() {
+      link
+        .attr("x1", function (d) {
+          return d.source.x;
+        })
+        .attr("y1", function (d) {
+          return d.source.y;
+        })
+        .attr("x2", function (d) {
+          return d.target.x;
+        })
+        .attr("y2", function (d) {
+          return d.target.y;
+        });
+
+      node
+        .attr("cx", function (d) {
+          return d.x;
+        })
+        .attr("cy", function (d) {
+          return d.y;
+        });
+    }
+
+    function dragstarted(event, d) {
+      if (!event.active) simulation.alphaTarget(0.3).restart();
+      d.fx = d.x;
+      d.fy = d.y;
+    }
+
+    function dragged(event, d) {
+      d.fx = event.x;
+      d.fy = event.y;
+    }
+
+    function dragended(event, d) {
+      if (!event.active) simulation.alphaTarget(0);
+      d.fx = null;
+      d.fy = null;
+    }
   }
 
   render() {
