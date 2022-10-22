@@ -77,6 +77,8 @@ export class GraphViz extends LitElementWw {
         { source: "Ina", target: "Bob" },
         { source: "Chen", target: "Bob" },
         { source: "Dawg", target: "Chen" },
+        { source: "Chen", target: "Frank" },
+
         { source: "Hanes", target: "Frank" },
         { source: "Hanes", target: "George" },
         { source: "Dawg", target: "Ethan" },
@@ -85,6 +87,9 @@ export class GraphViz extends LitElementWw {
 
     var simulation = d3
       .forceSimulation(graph.nodes)
+
+      .force("charge", d3.forceManyBody().strength(-300))
+      .force("center", d3.forceCenter(this.width / 2, this.height / 2))
       .force(
         "link",
         d3
@@ -92,11 +97,12 @@ export class GraphViz extends LitElementWw {
           .id(function (d) {
             return d.name;
           })
+          .distance(function () {
+            return 100;
+          })
           .links(graph.links)
       )
 
-      .force("charge", d3.forceManyBody().strength(-300))
-      .force("center", d3.forceCenter(this.width / 2, this.height / 2))
       .on("tick", ticked);
 
     var link = svg
