@@ -38,9 +38,13 @@ export class DfsGraph extends LitElementWw {
     let svg = select(this.shadowRoot.querySelectorAll(".chart")[0])
       .attr("width", this.width)
       .attr("height", this.height);
-    buildChart(svg, this.width, this.height, graph, (i) => {
-      dfs("Ina", i, graph, this);
-    });
+    buildChart(
+      svg,
+      this.width,
+      this.height,
+      graph,
+      (i, graph, animateNodeByName) => dfs("ina", i, graph, animateNodeByName)
+    );
   }
 
   render() {

@@ -8,6 +8,6 @@ import "./components/dijkstra_component.ts";
 export class GraphViz extends LitElementWw {
   render() {
     //return html`<dfs-graph />`;
-    return html`<dijkstra-graph />`;
+    return html`<dfs-graph />`;
   }
 }

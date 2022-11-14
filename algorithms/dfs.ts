@@ -1,9 +1,4 @@
-import * as d3 from "d3";
-import { delay } from "../utils/sleep";
-
-const translate_speed = 2000;
-
-export async function dfs(goal, start, graph, comp) {
+export async function dfs(goal, start, graph, animateNodeByName) {
   let visited = {};
   let adjacent = {};
   for (let n of graph.nodes) {
@@ -21,19 +16,7 @@ export async function dfs(goal, start, graph, comp) {
   while (stack.length != 0) {
     // Pop a vertex from stack and print it
     let current = stack.pop();
-    let x = d3.select(comp.shadowRoot.querySelector(".node." + current.name));
-    x.transition()
-      .delay((translate_speed * 2) / 5)
-      .duration(translate_speed / 5)
-      .attr("r", 10)
-      .transition()
-      .duration(translate_speed / 5)
-      .attr("r", 15)
-      .style("fill", "#D0E1C3")
-      .style("stroke-width", "0");
-
-    await delay(translate_speed);
-
+    await animateNodeByName(current.name);
     // Stack may contain same vertex twice. So
     // we need to print the popped item only
     // if it is not visited.

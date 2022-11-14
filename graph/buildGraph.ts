@@ -1,4 +1,5 @@
 import * as d3 from "d3";
+import { delay } from "../utils/sleep";
 
 export function buildChart(svg, width, height, graph, onclick) {
   var simulation = d3
@@ -80,7 +81,7 @@ export function buildChart(svg, width, height, graph, onclick) {
       return d.name;
     })
     .on("click", async (d, i) => {
-      onclick(i);
+      onclick(i, graph, animateNodeByName);
     });
 
   function ticked() {
@@ -144,5 +145,23 @@ export function buildChart(svg, width, height, graph, onclick) {
     if (!event.active) simulation.alphaTarget(0);
     d.fx = null;
     d.fy = null;
+  }
+
+  async function animateNodeByName(name: string) {
+    const translate_speed = 2000;
+
+    let x = gnode.selectAll(".node." + name);
+    console.log(x);
+    x.transition()
+      .delay((translate_speed * 2) / 5)
+      .duration(translate_speed / 5)
+      .attr("r", 10)
+      .transition()
+      .duration(translate_speed / 5)
+      .attr("r", 15)
+      .style("fill", "#D0E1C3")
+      .style("stroke-width", "0");
+
+    await delay(translate_speed);
   }
 }
