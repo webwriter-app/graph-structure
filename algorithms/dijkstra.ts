@@ -1,4 +1,4 @@
-export const dijkstra = (start, graph) => {
+export const dijkstra = async (start, graph, animateNodeByName) => {
   var dist = {};
   var prev = {};
 
@@ -28,6 +28,7 @@ export const dijkstra = (start, graph) => {
 
   while (q.length > 0) {
     var u = getNodeWithLowestDist(q, dist);
+    await animateNodeByName(u.name);
     q = q.filter((e) => e.name !== u.name);
 
     for (var n of neighbors[u.name]) {

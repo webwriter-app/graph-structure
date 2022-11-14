@@ -151,7 +151,6 @@ export function buildChart(svg, width, height, graph, onclick) {
     const translate_speed = 2000;
 
     let x = gnode.selectAll(".node." + name);
-    console.log(x);
     x.transition()
       .delay((translate_speed * 2) / 5)
       .duration(translate_speed / 5)
