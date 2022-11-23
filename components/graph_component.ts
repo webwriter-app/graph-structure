@@ -2,6 +2,7 @@ import { LitElementWw } from "@webwriter/lit";
 import { html } from "lit";
 import { customElement } from "lit/decorators.js";
 import { property } from "lit/decorators/property.js";
+import { iGraph } from "./../index";
 
 import { select } from "d3-selection";
 import { buildChart } from "../graph/buildGraph";
@@ -14,18 +15,20 @@ export class Graph extends LitElementWw {
   @property({ type: Function }) callback = (i, graph, animateNodeByName) => {
     console.log("default callback");
   };
-  @property() graph: string = "{ nodes: [], links: [] }";
+  @property({ type: Object }) graph: iGraph = { nodes: [], links: [] };
 
-  firstUpdated() {
+  updated() {
     let svg = select(this.shadowRoot.querySelectorAll(".chart")[0])
       .attr("width", this.width)
       .attr("height", this.height);
+
+    svg.selectAll("*").remove();
 
     buildChart(
       svg,
       this.width,
       this.height,
-      JSON.parse(this.graph),
+      this.graph,
       (i, graph, animateNodeByName) =>
         this.callback(i, graph, animateNodeByName)
     );

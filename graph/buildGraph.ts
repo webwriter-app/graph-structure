@@ -4,7 +4,7 @@ import { delay } from "../utils/sleep";
 export function buildChart(svg, width, height, graph, onclick) {
   var simulation = d3
     .forceSimulation(graph.nodes)
-    .force("charge", d3.forceManyBody().strength(-300))
+    .force("charge", d3.forceManyBody().strength(-100))
     .force("center", d3.forceCenter(width / 2, height / 2))
     .force(
       "link",
