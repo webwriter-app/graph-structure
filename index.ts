@@ -167,7 +167,7 @@ export class GraphViz extends LitElementWw {
             links: (this.graph as unknown as iGraphAfterRender).links.filter(
               (link) =>
                 link.source.name !== this.toDelete &&
-                link.source.name !== this.toDelete
+                link.target.name !== this.toDelete
             ),
           };
         }}"
