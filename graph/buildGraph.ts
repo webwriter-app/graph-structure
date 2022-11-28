@@ -2,10 +2,18 @@ import * as d3 from "d3";
 import { delay } from "../utils/sleep";
 
 export function buildChart(svg, width, height, graph, onclick) {
+  let radius = 15;
+
   var simulation = d3
     .forceSimulation(graph.nodes)
-    .force("charge", d3.forceManyBody().strength(-100))
+    .force("charge", d3.forceManyBody().strength(-250))
     .force("center", d3.forceCenter(width / 2, height / 2))
+    .force(
+      "collision",
+      d3.forceCollide().radius(function (d) {
+        return d.radius;
+      })
+    )
     .force(
       "link",
       d3
@@ -60,7 +68,7 @@ export function buildChart(svg, width, height, graph, onclick) {
     .attr("class", function (d) {
       return "node " + d.name;
     })
-    .attr("r", 15)
+    .attr("r", radius - 0.75)
     .attr("fill", "red")
     .call(
       d3
@@ -115,10 +123,10 @@ export function buildChart(svg, width, height, graph, onclick) {
 
     node
       .attr("cx", function (d) {
-        return d.x;
+        return (d.x = Math.max(radius, Math.min(width - radius, d.x)));
       })
       .attr("cy", function (d) {
-        return d.y;
+        return (d.y = Math.max(radius, Math.min(height - radius, d.y)));
       });
 
     node.on("mouseover", function (d) {
@@ -146,7 +154,6 @@ export function buildChart(svg, width, height, graph, onclick) {
     d.fx = null;
     d.fy = null;
   }
-
   async function animateNodeByName(name: string) {
     const translate_speed = 2000;
 

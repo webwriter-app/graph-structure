@@ -9,8 +9,8 @@ import { buildChart } from "../graph/buildGraph";
 
 @customElement("graph-graph")
 export class Graph extends LitElementWw {
-  @property() width: number = 960;
-  @property() height: number = 800;
+  @property() width: number = 600;
+  @property() height: number = 600;
 
   @property({ type: Function }) callback = (i, graph, animateNodeByName) => {
     console.log("default callback");
