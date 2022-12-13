@@ -12,9 +12,6 @@ export class Graph extends LitElementWw {
   @property() width: number = 600;
   @property() height: number = 600;
 
-  @property({ type: Function }) callback = (i, graph, animateNodeByName) => {
-    console.log("default callback");
-  };
   @property({ type: Object }) graph: iGraph = { nodes: [], links: [] };
 
   updated() {
@@ -24,14 +21,14 @@ export class Graph extends LitElementWw {
 
     svg.selectAll("*").remove();
 
-    buildChart(
-      svg,
-      this.width,
-      this.height,
-      this.graph,
-      (i, graph, animateNodeByName) =>
-        this.callback(i, graph, animateNodeByName)
-    );
+    buildChart(svg, this.width, this.height, this.graph);
+
+    const event = new CustomEvent("svg-update", {
+      bubbles: true,
+      composed: true,
+      detail: svg,
+    });
+    this.dispatchEvent(event);
   }
 
   render() {

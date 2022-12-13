@@ -1,4 +1,4 @@
-export async function dfs(goal, start, graph, animateNodeByName) {
+export async function dfs(start, graph, animateNodeByName) {
   let visited = {};
   let adjacent = {};
   for (let n of graph.nodes) {

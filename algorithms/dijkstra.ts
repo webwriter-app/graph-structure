@@ -39,9 +39,6 @@ export const dijkstra = async (start, graph, animateNodeByName) => {
       }
     }
   }
-
-  console.log(dist);
-  console.log(prev);
 };
 
 function getNodeWithLowestDist(q, dist) {
