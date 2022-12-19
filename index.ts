@@ -6,30 +6,20 @@ import { dfs } from "./algorithms/dfs";
 import { dijkstra } from "./algorithms/dijkstra";
 import "./components/graph_component.ts";
 import { animateNodeByName } from "./graph/buildGraph";
+import {
+  addLink,
+  addNode,
+  containsLink,
+  deleteLink,
+  deleteNode,
+  iGraphAfterRender,
+} from "./utils/updateGraph";
 
 export type iGraph = {
   nodes: { name: string }[];
   links: {
     source: string;
     target: string;
-    weight: number;
-  }[];
-};
-
-type LinkNode = {
-  index: number;
-  name: string;
-  vx: number;
-  vy: number;
-  x: number;
-  y: number;
-};
-
-type iGraphAfterRender = {
-  nodes: { name: string }[];
-  links: {
-    source: LinkNode;
-    target: LinkNode;
     weight: number;
   }[];
 };
@@ -63,65 +53,71 @@ export class GraphViz extends LitElementWw {
   constructor() {
     super();
     this.addEventListener("my-event", (e: CustomEvent) => {
-      if (this.action == "delete") {
-        (this.graph as unknown as iGraphAfterRender) = {
-          nodes: this.graph.nodes.filter((node) => node.name !== e.detail.name),
-          links: (this.graph as unknown as iGraphAfterRender).links.filter(
-            (link) =>
-              link.source.name !== e.detail.name &&
-              link.target.name !== e.detail.name
-          ),
-        };
-        this.action = "";
-        document.body.style.cursor = "auto";
-        return;
-      }
-      if (this.action == "add link") {
-        this.action = "add link 2";
-        this.selectedNode = e.detail.name;
-        return;
-      }
-      if (this.action == "add link 2") {
-        if (
-          (this.graph as unknown as iGraphAfterRender).links.filter(
-            (link) =>
-              link.source.name === this.selectedNode &&
-              link.target.name === e.detail.name
-          ).length < 1 &&
-          this.selectedNode !== e.detail.name
-        ) {
-          this.graph = {
-            nodes: this.graph.nodes,
-            links: [
-              ...this.graph.links,
-              {
-                source: this.selectedNode,
-                target: e.detail.name,
-                weight: this.newLinkWeight,
-              },
-            ],
-          };
-        }
+      console.log(e);
 
+      if (this.action == "add node") {
+        this.graph = addNode(this.graph, this.newNode);
         this.action = "";
         document.body.style.cursor = "auto";
         return;
       }
-      if (this.action == "execute") {
-        if (this.algorithm == "DFS") {
-          dfs(e.detail, this.graph, (name) =>
-            animateNodeByName(this.svg, name)
+      if (e.detail.type == "LINK") {
+        if (this.action == "deleteLink") {
+          (this.graph as unknown as iGraphAfterRender) = deleteLink(
+            this.graph,
+            e.detail.data.source.name,
+            e.detail.data.target.name
           );
         }
-        if (this.algorithm == "DIJKSTRA") {
-          dijkstra(e.detail, this.graph, (name) =>
-            animateNodeByName(this.svg, name)
+      }
+      if (e.detail.type == "NODE") {
+        if (this.action == "delete") {
+          (this.graph as unknown as iGraphAfterRender) = deleteNode(
+            this.graph,
+            e.detail.data.name
           );
+          this.action = "";
+          document.body.style.cursor = "auto";
+          return;
         }
+        if (this.action == "add link") {
+          this.action = "add link 2";
+          this.selectedNode = e.detail.data.name;
+          return;
+        }
+        if (this.action == "add link 2") {
+          if (
+            !containsLink(this.graph, this.selectedNode, e.detail.data.name) &&
+            this.selectedNode !== e.detail.data.name
+          ) {
+            this.graph = addLink(
+              this.graph,
+              this.selectedNode,
+              e.detail.data.name,
+              this.newLinkWeight
+            );
+          }
 
-        this.action = "";
-        document.body.style.cursor = "auto";
-        return;
+          this.action = "";
+          document.body.style.cursor = "auto";
+          return;
+        }
+        if (this.action == "execute") {
+          if (this.algorithm == "DFS") {
+            dfs(e.detail.data, this.graph, (name) =>
+              animateNodeByName(this.svg, name)
+            );
+          }
+          if (this.algorithm == "DIJKSTRA") {
+            dijkstra(e.detail.data, this.graph, (name) =>
+              animateNodeByName(this.svg, name)
+            );
+          }
+
+          this.action = "";
+          document.body.style.cursor = "auto";
+          return;
+        }
       }
     });
 
@@ -181,16 +177,8 @@ export class GraphViz extends LitElementWw {
             ></sl-input>
             <sl-button
               @click="${() => {
-                if (
-                  !this.graph.nodes
-                    .map((node) => node.name)
-                    .includes(this.newNode) &&
-                  this.newNode
-                )
-                  this.graph = {
-                    nodes: [...this.graph.nodes, { name: this.newNode }],
-                    links: this.graph.links,
-                  };
+                this.action = "add node";
+                document.body.style.cursor = "crosshair";
               }}"
               >Add Node</sl-button
             >
@@ -222,6 +210,17 @@ export class GraphViz extends LitElementWw {
                 this.action = "delete";
               }}"
               >Delete Node</sl-button
+            >
+          </sl-card>
+          <sl-card class="card">
+            <p>Delete Link</p>
+            <sl-button
+              @click="${() => {
+                document.body.style.cursor = "crosshair";
+
+                this.action = "deleteLink";
+              }}"
+              >Delete Link</sl-button
             >
           </sl-card>
         </sl-tab-panel>

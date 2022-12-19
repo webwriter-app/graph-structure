@@ -30,6 +30,14 @@ export function buildChart(svg, width, height, graph) {
     .on("tick", ticked);
 
   var glink = svg
+    .on("click", async (d, i) => {
+      const event = new CustomEvent("my-event", {
+        bubbles: true,
+        composed: true,
+        detail: { data: i, type: "SVG" },
+      });
+      d.path[0].dispatchEvent(event);
+    })
     .append("g")
     .attr("class", "links")
     .selectAll(".link")
@@ -44,12 +52,28 @@ export function buildChart(svg, width, height, graph) {
     .attr("stroke", "black")
     .attr("stroke-width", function (d) {
       return 3;
+    })
+    .on("click", async (d, i) => {
+      const event = new CustomEvent("my-event", {
+        bubbles: true,
+        composed: true,
+        detail: { data: i, type: "LINK" },
+      });
+      d.path[0].dispatchEvent(event);
     });
 
   var linktext = glink
     .append("text")
     .attr("class", function (d) {
       return "linktext " + d.index;
+    })
+    .on("click", async (d, i) => {
+      const event = new CustomEvent("my-event", {
+        bubbles: true,
+        composed: true,
+        detail: { data: i, type: "LINK" },
+      });
+      d.path[0].dispatchEvent(event);
     })
     .attr("text-anchor", "middle")
     .text(function (d) {
@@ -70,6 +94,14 @@ export function buildChart(svg, width, height, graph) {
     })
     .attr("r", radius - 0.75)
     .attr("fill", "red")
+    .on("click", async (d, i) => {
+      const event = new CustomEvent("my-event", {
+        bubbles: true,
+        composed: true,
+        detail: { data: i, type: "NODE" },
+      });
+      d.path[0].dispatchEvent(event);
+    })
     .call(
       d3
         .drag()
@@ -92,7 +124,7 @@ export function buildChart(svg, width, height, graph) {
       const event = new CustomEvent("my-event", {
         bubbles: true,
         composed: true,
-        detail: i,
+        detail: { data: i, type: "NODE" },
       });
       d.path[0].dispatchEvent(event);
     });
