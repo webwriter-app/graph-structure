@@ -5,7 +5,10 @@ import { property } from "lit/decorators/property.js";
 import { dfs } from "./algorithms/dfs";
 import { dijkstra } from "./algorithms/dijkstra";
 import "./components/graph_component.ts";
-import { animateNodeByName } from "./graph/buildGraph";
+import { animateLinkBySourceTarget } from "./graph/animateLinkBySourceTarget";
+import { animateNodeByName } from "./graph/animateNodeByName";
+import { animateNodeByNamev2 } from "./graph/animateNodeByNamev2";
+import { setNodeSubText } from "./graph/setNodeSubText";
 import {
   addLink,
   addNode,
@@ -104,13 +107,22 @@ export class GraphViz extends LitElementWw {
         }
         if (this.action == "execute") {
           if (this.algorithm == "DFS") {
-            dfs(e.detail.data, this.graph, (name) =>
-              animateNodeByName(this.svg, name)
+            dfs(
+              e.detail.data,
+              this.graph,
+              this.dfsTarget,
+              (name) => animateNodeByName(this.svg, name),
+              (name) => animateNodeByNamev2(this.svg, name)
             );
           }
           if (this.algorithm == "DIJKSTRA") {
-            dijkstra(e.detail.data, this.graph, (name) =>
-              animateNodeByName(this.svg, name)
+            dijkstra(
+              e.detail.data,
+              this.graph,
+              (name) => animateNodeByName(this.svg, name),
+              (source, target) =>
+                animateLinkBySourceTarget(this.svg, source, target),
+              (node, text) => setNodeSubText(this.svg, node, text)
             );
           }
 
@@ -140,6 +152,8 @@ export class GraphViz extends LitElementWw {
   @state() private selectedNode: string = "";
   @state() private newLinkWeight: number = 1;
 
+  @state() private dfsTarget: string = "";
+
   @state() private algorithm: "DFS" | "DIJKSTRA" = "DIJKSTRA";
   @state() private newNode: string = "";
 
@@ -159,6 +173,13 @@ export class GraphViz extends LitElementWw {
             <sl-menu-item value="DIJKSTRA">DIJKSTRA</sl-menu-item>
           </sl-select>
           <p></p>
+          ${this.algorithm == "DFS"
+            ? html`<sl-input
+                  @input="${(e) => (this.dfsTarget = e.target.value)}"
+                  label="Target"
+                ></sl-input>
+                <p></p>`
+            : ""}
           <sl-button
             @click="${() => {
               this.action = "execute";

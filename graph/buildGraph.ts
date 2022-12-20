@@ -1,8 +1,10 @@
 import * as d3 from "d3";
-import { delay } from "../utils/sleep";
+
+export const initSize = 26;
+export const emphSize = 28;
 
 export function buildChart(svg, width, height, graph) {
-  let radius = 15;
+  let radius = initSize;
 
   var simulation = d3
     .forceSimulation(graph.nodes)
@@ -47,7 +49,7 @@ export function buildChart(svg, width, height, graph) {
   var link = glink
     .append("line")
     .attr("class", function (d) {
-      return "link " + d.index;
+      return "link " + d.source.name + d.target.name;
     })
     .attr("stroke", "black")
     .attr("stroke-width", function (d) {
@@ -65,8 +67,9 @@ export function buildChart(svg, width, height, graph) {
   var linktext = glink
     .append("text")
     .attr("class", function (d) {
-      return "linktext " + d.index;
+      return "linktext " + d.source.name + d.target.name;
     })
+
     .on("click", async (d, i) => {
       const event = new CustomEvent("my-event", {
         bubbles: true,
@@ -75,11 +78,11 @@ export function buildChart(svg, width, height, graph) {
       });
       d.path[0].dispatchEvent(event);
     })
+
     .attr("text-anchor", "middle")
     .text(function (d) {
       return d.weight;
     });
-
   var gnode = svg
     .append("g")
     .attr("class", "nodes")
@@ -108,12 +111,17 @@ export function buildChart(svg, width, height, graph) {
         .on("start", dragstarted)
         .on("drag", dragged)
         .on("end", dragended)
-    );
+    )
+    .on("mouseout", function (d) {
+      d3.select(this).attr("r", initSize);
+    })
+    .on("mouseover", function (d) {
+      d3.select(this).attr("r", emphSize);
+    });
 
   var nodetext = gnode
     .append("text")
     .attr("text-anchor", "middle")
-    .attr("dy", "0.35em")
     .attr("class", function (d) {
       return "nodetext " + d.name;
     })
@@ -127,10 +135,60 @@ export function buildChart(svg, width, height, graph) {
         detail: { data: i, type: "NODE" },
       });
       d.path[0].dispatchEvent(event);
-    });
+    })
+    .on("mouseover", function (d, i) {
+      gnode.selectAll(".node." + i.name).attr("r", emphSize);
+    })
+    .on("mouseout", function (d, i) {
+      gnode.selectAll(".node." + i.name).attr("r", initSize);
+    })
+    .call(
+      d3
+        .drag()
+        .on("start", dragstarted)
+        .on("drag", dragged)
+        .on("end", dragended)
+    );
+
+  var nodesubtext = gnode
+    .append("text")
+    .attr("text-anchor", "middle")
+    .attr("dy", "0.8em")
+    .attr("class", function (d) {
+      return "nodesubtext " + d.name;
+    })
+
+    .on("click", async (d, i) => {
+      const event = new CustomEvent("my-event", {
+        bubbles: true,
+        composed: true,
+        detail: { data: i, type: "NODE" },
+      });
+      d.path[0].dispatchEvent(event);
+    })
+    .on("mouseover", function (d, i) {
+      gnode.selectAll(".node." + i.name).attr("r", emphSize);
+    })
+    .on("mouseout", function (d, i) {
+      gnode.selectAll(".node." + i.name).attr("r", initSize);
+    })
+    .call(
+      d3
+        .drag()
+        .on("start", dragstarted)
+        .on("drag", dragged)
+        .on("end", dragended)
+    );
 
   function ticked() {
     nodetext
+      .attr("x", function (d) {
+        return d.x;
+      })
+      .attr("y", function (d) {
+        return d.y;
+      });
+    nodesubtext
       .attr("x", function (d) {
         return d.x;
       })
@@ -165,14 +223,6 @@ export function buildChart(svg, width, height, graph) {
       .attr("cy", function (d) {
         return (d.y = Math.max(radius, Math.min(height - radius, d.y)));
       });
-
-    node.on("mouseover", function (d) {
-      d3.select(this).attr("r", 16.5);
-    });
-
-    node.on("mouseout", function (d) {
-      d3.select(this).attr("r", 15);
-    });
   }
 
   function dragstarted(event, d) {
@@ -191,21 +241,4 @@ export function buildChart(svg, width, height, graph) {
     d.fx = null;
     d.fy = null;
   }
-}
-
-export async function animateNodeByName(svg, name) {
-  const translate_speed = 2000;
-  let gnode = svg.selectAll("g");
-  let x = gnode.selectAll(".node." + name);
-  x.transition()
-    .delay((translate_speed * 2) / 5)
-    .duration(translate_speed / 5)
-    .attr("r", 10)
-    .transition()
-    .duration(translate_speed / 5)
-    .attr("r", 15)
-    .style("fill", "#D0E1C3")
-    .style("stroke-width", "0");
-
-  await delay(translate_speed);
 }

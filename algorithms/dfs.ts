@@ -1,4 +1,10 @@
-export async function dfs(start, graph, animateNodeByName) {
+export async function dfs(
+  start,
+  graph,
+  target,
+  animateNodeByName,
+  animateNodeByNamev2
+) {
   let visited = {};
   let adjacent = {};
   for (let n of graph.nodes) {
@@ -17,6 +23,11 @@ export async function dfs(start, graph, animateNodeByName) {
     // Pop a vertex from stack and print it
     let current = stack.pop();
     await animateNodeByName(current.name);
+    if (current.name == target) {
+      await animateNodeByNamev2(current.name);
+
+      return;
+    }
     // Stack may contain same vertex twice. So
     // we need to print the popped item only
     // if it is not visited.
