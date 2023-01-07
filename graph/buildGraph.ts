@@ -24,12 +24,34 @@ export function buildChart(svg, width, height, graph) {
           return d.name;
         })
         .distance(function () {
-          return 100;
+          return 150;
         })
         .links(graph.links)
     )
 
     .on("tick", ticked);
+
+  svg
+    .append("line")
+    .style("stroke", "lightgreen")
+    .style("stroke-width", 0)
+    .attr("class", "newlink");
+
+  svg.on("mousemove", function (event) {
+    const link = svg.select(".newlink");
+    if (graph.newLink) {
+      link.style("stroke-width", 10);
+      const source = graph.nodes.filter(
+        (node) => node.name == graph.newLink
+      )[0];
+      link.attr("x1", source.x);
+      link.attr("y1", source.y);
+      link.attr("x2", d3.pointer(event)[0]);
+      link.attr("y2", d3.pointer(event)[1]);
+    } else {
+      link.style("stroke-width", 0);
+    }
+  });
 
   var glink = svg
     .on("click", async (d, i) => {
@@ -179,7 +201,6 @@ export function buildChart(svg, width, height, graph) {
         .on("drag", dragged)
         .on("end", dragended)
     );
-
   function ticked() {
     nodetext
       .attr("x", function (d) {

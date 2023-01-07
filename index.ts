@@ -19,6 +19,7 @@ import {
 } from "./utils/updateGraph";
 
 export type iGraph = {
+  newLink: string;
   nodes: { name: string }[];
   links: {
     source: string;
@@ -30,6 +31,7 @@ export type iGraph = {
 @customElement("graph-viz")
 export class GraphViz extends LitElementWw {
   @property() graph: iGraph = {
+    newLink: "",
     nodes: [
       { name: "Ina" },
       { name: "Bob" },
@@ -84,6 +86,7 @@ export class GraphViz extends LitElementWw {
           return;
         }
         if (this.action == "add link") {
+          this.graph.newLink = e.detail.data.name;
           this.action = "add link 2";
           this.selectedNode = e.detail.data.name;
           return;
@@ -100,7 +103,7 @@ export class GraphViz extends LitElementWw {
               this.newLinkWeight
             );
           }
-
+          this.graph.newLink = "";
           this.action = "";
           document.body.style.cursor = "auto";
           return;

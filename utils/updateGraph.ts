@@ -37,7 +37,9 @@ export function deleteNode(graph, name) {
 export function containsLink(graph, source, target) {
   return (
     (graph as unknown as iGraphAfterRender).links.filter(
-      (link) => link.source.name === source && link.target.name === target
+      (link) =>
+        (link.source.name === source && link.target.name === target) ||
+        (link.source.name === target && link.target.name === source)
     ).length > 0
   );
 }
@@ -46,6 +48,7 @@ export function addNode(graph, name) {
   {
     if (!graph.nodes.map((node) => node.name).includes(name) && name) {
       let x = {
+        newLink: "",
         nodes: [...graph.nodes, { name }],
         links: [...graph.links],
       };
@@ -59,6 +62,7 @@ export function addNode(graph, name) {
 
 export function addLink(graph, source, target, weight) {
   return {
+    newLink: "",
     nodes: [...graph.nodes],
     links: [
       ...graph.links,
