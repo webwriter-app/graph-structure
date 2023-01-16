@@ -12,7 +12,11 @@ export class Graph extends LitElementWw {
   @property() width: number = 600;
   @property() height: number = 600;
 
-  @property({ type: Object }) graph: iGraph = { nodes: [], links: [] };
+  @property({ type: Object }) graph: iGraph = {
+    newLink: "",
+    nodes: [],
+    links: [],
+  };
 
   updated() {
     let svg = select(this.shadowRoot.querySelectorAll(".chart")[0])

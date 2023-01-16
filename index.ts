@@ -2,13 +2,18 @@ import { LitElementWw } from "@webwriter/lit";
 import { css, html } from "lit";
 import { customElement, state } from "lit/decorators.js";
 import { property } from "lit/decorators/property.js";
+import { bfs } from "./algorithms/bfs";
+import { cycle } from "./algorithms/cycle";
 import { dfs } from "./algorithms/dfs";
 import { dijkstra } from "./algorithms/dijkstra";
 import "./components/graph_component.ts";
 import { animateLinkBySourceTarget } from "./graph/animateLinkBySourceTarget";
+import { animateMultipleNodesByNameAndColor } from "./graph/animateMultipleNodesByNameAndColor";
 import { animateNodeByName } from "./graph/animateNodeByName";
-import { animateNodeByNamev2 } from "./graph/animateNodeByNamev2";
+import { animateNodeByNameAndColor } from "./graph/animateNodeByNameAndColor";
+import { resetColors } from "./graph/resetColors";
 import { setNodeSubText } from "./graph/setNodeSubText";
+import { delay } from "./utils/sleep";
 import {
   addLink,
   addNode,
@@ -28,6 +33,13 @@ export type iGraph = {
   }[];
 };
 
+export type AnimationType = {
+  type: "Link" | "Node1" | "Node2" | "SetNodeSubText" | "RESET" | "MULTI";
+  data: any;
+}[];
+
+const ac = new AbortController();
+let animationInterval;
 @customElement("graph-viz")
 export class GraphViz extends LitElementWw {
   @property() graph: iGraph = {
@@ -55,6 +67,52 @@ export class GraphViz extends LitElementWw {
   };
   @state() private svg: any = null;
   @state() private action: string = "";
+
+  @state() private animation: AnimationType = [];
+  @state() private animationStatus: "STOP" | "RUN" | "PAUSE" = "STOP";
+  @state() private animationPosition: number = 0;
+
+  async animateGraph() {
+    if (this.animationStatus === "RUN") {
+      if (this.animationPosition < this.animation.length) {
+        const currentStep = this.animation[this.animationPosition];
+        if (currentStep.type == "Link")
+          animateLinkBySourceTarget(
+            this.svg,
+            currentStep.data.source,
+            currentStep.data.target
+          );
+        if (currentStep.type == "RESET") resetColors(this.svg);
+        if (currentStep.type == "Node1")
+          animateNodeByName(this.svg, currentStep.data);
+        if (currentStep.type == "Node2")
+          animateNodeByNameAndColor(
+            this.svg,
+            currentStep.data.name,
+            currentStep.data.color
+          );
+        if (currentStep.type == "MULTI")
+          animateMultipleNodesByNameAndColor(
+            this.svg,
+            currentStep.data.names,
+            currentStep.data.color
+          );
+        if (currentStep.type == "SetNodeSubText")
+          setNodeSubText(
+            this.svg,
+            currentStep.data.node,
+            currentStep.data.text
+          );
+        this.animationPosition = this.animationPosition + 1;
+        await delay(2000);
+        this.animateGraph();
+      } else {
+        this.animationPosition = 0;
+        this.animationStatus = "STOP";
+      }
+    }
+  }
+
   constructor() {
     super();
     this.addEventListener("my-event", (e: CustomEvent) => {
@@ -64,6 +122,7 @@ export class GraphViz extends LitElementWw {
         this.graph = addNode(this.graph, this.newNode);
         this.action = "";
         document.body.style.cursor = "auto";
+
         return;
       }
       if (e.detail.type == "LINK") {
@@ -109,25 +168,18 @@ export class GraphViz extends LitElementWw {
           return;
         }
         if (this.action == "execute") {
+          if (this.algorithm == "BFS") {
+            this.animation = bfs(e.detail.data, this.graph, this.dfsTarget);
+          }
           if (this.algorithm == "DFS") {
-            dfs(
-              e.detail.data,
-              this.graph,
-              this.dfsTarget,
-              (name) => animateNodeByName(this.svg, name),
-              (name) => animateNodeByNamev2(this.svg, name)
-            );
+            this.animation = dfs(e.detail.data, this.graph, this.dfsTarget);
           }
           if (this.algorithm == "DIJKSTRA") {
-            dijkstra(
-              e.detail.data,
-              this.graph,
-              (name) => animateNodeByName(this.svg, name),
-              (source, target) =>
-                animateLinkBySourceTarget(this.svg, source, target),
-              (node, text) => setNodeSubText(this.svg, node, text)
-            );
+            this.animation = dijkstra(e.detail.data, this.graph);
           }
+          console.log(this.animation);
+          this.animationStatus = "RUN";
+          this.animateGraph();
 
           this.action = "";
           document.body.style.cursor = "auto";
@@ -157,8 +209,14 @@ export class GraphViz extends LitElementWw {
 
   @state() private dfsTarget: string = "";
 
-  @state() private algorithm: "DFS" | "DIJKSTRA" = "DIJKSTRA";
+  @state() private algorithm: "DFS" | "DIJKSTRA" | "CYCLE" | "BFS" = "DIJKSTRA";
   @state() private newNode: string = "";
+
+  resetGraph() {
+    const temp = { ...this.graph };
+    this.graph = undefined;
+    this.graph = temp;
+  }
 
   render() {
     return html`<div>
@@ -172,11 +230,13 @@ export class GraphViz extends LitElementWw {
             @sl-change=${(e) => (this.algorithm = e.target.value)}
             label="Select Algorithm"
           >
+            <sl-menu-item value="CYCLE">Cycle Detection</sl-menu-item>
+            <sl-menu-item value="BFS">BFS</sl-menu-item>
             <sl-menu-item value="DFS">DFS</sl-menu-item>
             <sl-menu-item value="DIJKSTRA">DIJKSTRA</sl-menu-item>
           </sl-select>
           <p></p>
-          ${this.algorithm == "DFS"
+          ${this.algorithm == "DFS" || this.algorithm == "BFS"
             ? html`<sl-input
                   @input="${(e) => (this.dfsTarget = e.target.value)}"
                   label="Target"
@@ -184,11 +244,45 @@ export class GraphViz extends LitElementWw {
                 <p></p>`
             : ""}
           <sl-button
-            @click="${() => {
-              this.action = "execute";
-              document.body.style.cursor = "crosshair";
+            @click="${async () => {
+              this.animationStatus = "STOP";
+              this.animationPosition = 0;
+              this.resetGraph();
+              if (this.algorithm == "CYCLE") {
+                await delay(200);
+
+                this.animation = cycle(this.graph);
+
+                this.animationStatus = "RUN";
+                this.animateGraph();
+
+                this.action = "";
+              } else {
+                this.action = "execute";
+                document.body.style.cursor = "crosshair";
+              }
             }}"
             >Execute</sl-button
+          >
+
+          <sl-button
+            @click="${() => {
+              this.animationStatus = "STOP";
+            }}"
+            >Stop</sl-button
+          >
+          <sl-button
+            @click="${() => {
+              if (this.animationStatus === "RUN") {
+                this.animationStatus = "PAUSE";
+                return;
+              }
+              if (this.animationStatus === "PAUSE") {
+                this.animationStatus = "RUN";
+                this.animateGraph();
+              }
+            }}"
+            >${this.animationStatus == "PAUSE" ? "Play" : "Pause"}</sl-button
           >
         </sl-tab-panel>
         <sl-tab-panel name="graph">
@@ -201,6 +295,7 @@ export class GraphViz extends LitElementWw {
             ></sl-input>
             <sl-button
               @click="${() => {
+                this.animationStatus = "STOP";
                 this.action = "add node";
                 document.body.style.cursor = "crosshair";
               }}"
@@ -219,6 +314,7 @@ export class GraphViz extends LitElementWw {
 
             <sl-button
               @click="${() => {
+                this.animationStatus = "STOP";
                 this.action = "add link";
                 document.body.style.cursor = "crosshair";
               }}"
@@ -229,6 +325,7 @@ export class GraphViz extends LitElementWw {
             <p>Delete Node</p>
             <sl-button
               @click="${() => {
+                this.animationStatus = "STOP";
                 document.body.style.cursor = "crosshair";
 
                 this.action = "delete";
@@ -240,6 +337,7 @@ export class GraphViz extends LitElementWw {
             <p>Delete Link</p>
             <sl-button
               @click="${() => {
+                this.animationStatus = "STOP";
                 document.body.style.cursor = "crosshair";
 
                 this.action = "deleteLink";

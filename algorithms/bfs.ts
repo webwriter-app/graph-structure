@@ -1,6 +1,6 @@
 import { AnimationType } from "..";
 
-export function dfs(start, graph, target) {
+export function bfs(start, graph, target) {
   let animation: AnimationType = [];
 
   let visited = {};
@@ -14,12 +14,13 @@ export function dfs(start, graph, target) {
     adjacent[l.target.name].push(l.source);
   }
 
-  let stack = [];
-  stack.push(start);
+  let queue = [];
+  queue.splice(0, 0, start);
+  visited[start.name] = true;
 
-  while (stack.length != 0) {
-    // Pop a vertex from stack and print it
-    let current = stack.pop();
+  while (queue.length != 0) {
+    let current = queue.pop();
+
     animation.push({ type: "Node1", data: current.name as string });
 
     if (current.name == target) {
@@ -29,21 +30,21 @@ export function dfs(start, graph, target) {
       });
       return animation;
     }
-    // Stack may contain same vertex twice. So
-    // we need to print the popped item only
-    // if it is not visited.
+
     if (visited[current.name] == false) {
       visited[current.name] = true;
     }
 
-    // Get all adjacent vertices of the
-    // popped vertex s. If a adjacent has
-    // not been visited, then push it
-    // to the stack.
     for (let node = 0; node < adjacent[current.name].length; node++) {
-      if (!visited[adjacent[current.name][node].name])
-        stack.push(adjacent[current.name][node]);
+      if (
+        !visited[adjacent[current.name][node].name] &&
+        !queue
+          .map((node) => node.name)
+          .includes(adjacent[current.name][node].name)
+      )
+        queue.splice(0, 0, adjacent[current.name][node]);
     }
   }
+
   return animation;
 }

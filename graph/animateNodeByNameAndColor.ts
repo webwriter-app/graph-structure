@@ -1,7 +1,7 @@
 import { delay } from "../utils/sleep";
 import { initSize } from "./buildGraph";
 
-export async function animateNodeByNamev2(svg, name) {
+export async function animateNodeByNameAndColor(svg, name, color) {
   const translate_speed = 2000;
   let gnode = svg.selectAll("g");
   let x = gnode.selectAll(".node." + name);
@@ -12,7 +12,7 @@ export async function animateNodeByNamev2(svg, name) {
     .transition()
     .duration(translate_speed / 5)
     .attr("r", initSize)
-    .style("fill", "#3BB143")
+    .style("fill", color)
     .style("stroke-width", "0");
 
   await delay(translate_speed);

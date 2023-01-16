@@ -60,7 +60,7 @@ export function buildChart(svg, width, height, graph) {
         composed: true,
         detail: { data: i, type: "SVG" },
       });
-      d.path[0].dispatchEvent(event);
+      d.srcElement.dispatchEvent(event);
     })
     .append("g")
     .attr("class", "links")
@@ -83,7 +83,7 @@ export function buildChart(svg, width, height, graph) {
         composed: true,
         detail: { data: i, type: "LINK" },
       });
-      d.path[0].dispatchEvent(event);
+      d.srcElement.dispatchEvent(event);
     });
 
   var linktext = glink
@@ -98,7 +98,7 @@ export function buildChart(svg, width, height, graph) {
         composed: true,
         detail: { data: i, type: "LINK" },
       });
-      d.path[0].dispatchEvent(event);
+      d.srcElement.dispatchEvent(event);
     })
 
     .attr("text-anchor", "middle")
@@ -125,7 +125,7 @@ export function buildChart(svg, width, height, graph) {
         composed: true,
         detail: { data: i, type: "NODE" },
       });
-      d.path[0].dispatchEvent(event);
+      d.srcElement.dispatchEvent(event);
     })
     .call(
       d3
@@ -156,7 +156,7 @@ export function buildChart(svg, width, height, graph) {
         composed: true,
         detail: { data: i, type: "NODE" },
       });
-      d.path[0].dispatchEvent(event);
+      d.srcElement.dispatchEvent(event);
     })
     .on("mouseover", function (d, i) {
       gnode.selectAll(".node." + i.name).attr("r", emphSize);
@@ -186,7 +186,7 @@ export function buildChart(svg, width, height, graph) {
         composed: true,
         detail: { data: i, type: "NODE" },
       });
-      d.path[0].dispatchEvent(event);
+      d.srcElement.dispatchEvent(event);
     })
     .on("mouseover", function (d, i) {
       gnode.selectAll(".node." + i.name).attr("r", emphSize);

@@ -1,10 +1,7 @@
-export const dijkstra = async (
-  start,
-  graph,
-  animateNodeByName,
-  animateLinkBySourceTarget,
-  setNodeSubText
-) => {
+import { AnimationType } from "..";
+
+export const dijkstra = (start, graph) => {
+  let animation: AnimationType = [];
   var dist = {};
   var prev = {};
 
@@ -31,22 +28,34 @@ export const dijkstra = async (
   }
 
   dist[start.name] = 0;
-  setNodeSubText(start.name, 0);
+  animation.push({
+    type: "SetNodeSubText",
+    data: { node: start.name as string, text: 0 },
+  });
   while (q.length > 0) {
     var u = getNodeWithLowestDist(q, dist);
-    await animateNodeByName(u.name);
+    animation.push({ type: "Node1", data: u.name as string });
     q = q.filter((e) => e.name !== u.name);
 
     for (var n of neighbors[u.name]) {
       var alt = dist[u.name] + n.weight;
-      await animateLinkBySourceTarget(u.name, n.name);
+      animation.push({
+        type: "Link",
+        data: { source: u.name, target: n.name },
+      });
+
       if (alt < dist[n.name]) {
         dist[n.name] = alt;
-        setNodeSubText(n.name, alt);
+        animation.push({
+          type: "SetNodeSubText",
+          data: { node: n.name as string, text: alt },
+        });
+
         prev[n.name] = u.name;
       }
     }
   }
+  return animation;
 };
 
 function getNodeWithLowestDist(q, dist) {
