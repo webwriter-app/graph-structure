@@ -21,7 +21,7 @@ export function cycle(graph) {
       if (current.name == start) {
         animation.push({
           type: "MULTI",
-          data: { names: path, color: "#32CD32" },
+          data: { names: path, colors: path.map((x) => "#32CD32") },
         });
       }
       return;

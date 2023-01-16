@@ -3,6 +3,7 @@ import { css, html } from "lit";
 import { customElement, state } from "lit/decorators.js";
 import { property } from "lit/decorators/property.js";
 import { bfs } from "./algorithms/bfs";
+import { coloring } from "./algorithms/coloring";
 import { cycle } from "./algorithms/cycle";
 import { dfs } from "./algorithms/dfs";
 import { dijkstra } from "./algorithms/dijkstra";
@@ -95,7 +96,7 @@ export class GraphViz extends LitElementWw {
           animateMultipleNodesByNameAndColor(
             this.svg,
             currentStep.data.names,
-            currentStep.data.color
+            currentStep.data.colors
           );
         if (currentStep.type == "SetNodeSubText")
           setNodeSubText(
@@ -209,7 +210,12 @@ export class GraphViz extends LitElementWw {
 
   @state() private dfsTarget: string = "";
 
-  @state() private algorithm: "DFS" | "DIJKSTRA" | "CYCLE" | "BFS" = "DIJKSTRA";
+  @state() private algorithm:
+    | "DFS"
+    | "DIJKSTRA"
+    | "CYCLE"
+    | "BFS"
+    | "COLORING" = "COLORING";
   @state() private newNode: string = "";
 
   resetGraph() {
@@ -230,6 +236,7 @@ export class GraphViz extends LitElementWw {
             @sl-change=${(e) => (this.algorithm = e.target.value)}
             label="Select Algorithm"
           >
+            <sl-menu-item value="COLORING">Graph Coloring</sl-menu-item>
             <sl-menu-item value="CYCLE">Cycle Detection</sl-menu-item>
             <sl-menu-item value="BFS">BFS</sl-menu-item>
             <sl-menu-item value="DFS">DFS</sl-menu-item>
@@ -248,11 +255,14 @@ export class GraphViz extends LitElementWw {
               this.animationStatus = "STOP";
               this.animationPosition = 0;
               this.resetGraph();
-              if (this.algorithm == "CYCLE") {
+              if (this.algorithm == "CYCLE" || this.algorithm == "COLORING") {
                 await delay(200);
+                if (this.algorithm == "CYCLE")
+                  this.animation = cycle(this.graph);
+                console.log(this.animation);
 
-                this.animation = cycle(this.graph);
-
+                if (this.algorithm == "COLORING")
+                  this.animation = coloring(this.graph);
                 this.animationStatus = "RUN";
                 this.animateGraph();
 
