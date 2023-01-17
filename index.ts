@@ -7,6 +7,7 @@ import { coloring } from "./algorithms/coloring";
 import { cycle } from "./algorithms/cycle";
 import { dfs } from "./algorithms/dfs";
 import { dijkstra } from "./algorithms/dijkstra";
+import { spanTree } from "./algorithms/spanTree";
 import "./components/graph_component.ts";
 import { animateLinkBySourceTarget } from "./graph/animateLinkBySourceTarget";
 import { animateMultipleNodesByNameAndColor } from "./graph/animateMultipleNodesByNameAndColor";
@@ -212,10 +213,11 @@ export class GraphViz extends LitElementWw {
 
   @state() private algorithm:
     | "DFS"
+    | "SPANTREE"
     | "DIJKSTRA"
     | "CYCLE"
     | "BFS"
-    | "COLORING" = "COLORING";
+    | "COLORING" = "SPANTREE";
   @state() private newNode: string = "";
 
   resetGraph() {
@@ -236,6 +238,8 @@ export class GraphViz extends LitElementWw {
             @sl-change=${(e) => (this.algorithm = e.target.value)}
             label="Select Algorithm"
           >
+            <sl-menu-item value="SPANTREE">Span Tree</sl-menu-item>
+
             <sl-menu-item value="COLORING">Graph Coloring</sl-menu-item>
             <sl-menu-item value="CYCLE">Cycle Detection</sl-menu-item>
             <sl-menu-item value="BFS">BFS</sl-menu-item>
@@ -252,24 +256,29 @@ export class GraphViz extends LitElementWw {
             : ""}
           <sl-button
             @click="${async () => {
-              this.animationStatus = "STOP";
-              this.animationPosition = 0;
-              this.resetGraph();
-              if (this.algorithm == "CYCLE" || this.algorithm == "COLORING") {
-                await delay(200);
-                if (this.algorithm == "CYCLE")
-                  this.animation = cycle(this.graph);
-                console.log(this.animation);
-
-                if (this.algorithm == "COLORING")
-                  this.animation = coloring(this.graph);
+              if (this.animationStatus === "STOP") {
                 this.animationStatus = "RUN";
-                this.animateGraph();
+                this.resetGraph();
+                await delay(200);
+                this.animationPosition = 0;
+                if (
+                  this.algorithm == "CYCLE" ||
+                  this.algorithm == "COLORING" ||
+                  this.algorithm == "SPANTREE"
+                ) {
+                  if (this.algorithm == "CYCLE")
+                    this.animation = cycle(this.graph);
+                  if (this.algorithm == "SPANTREE")
+                    this.animation = spanTree(this.graph);
+                  if (this.algorithm == "COLORING")
+                    this.animation = coloring(this.graph);
+                  this.animateGraph();
 
-                this.action = "";
-              } else {
-                this.action = "execute";
-                document.body.style.cursor = "crosshair";
+                  this.action = "";
+                } else {
+                  this.action = "execute";
+                  document.body.style.cursor = "crosshair";
+                }
               }
             }}"
             >Execute</sl-button
