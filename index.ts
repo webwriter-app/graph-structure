@@ -10,6 +10,8 @@ import { dijkstra } from "./algorithms/dijkstra";
 import { spanTree } from "./algorithms/spanTree";
 import "./components/graph_component.ts";
 import { animateLinkBySourceTarget } from "./graph/animateLinkBySourceTarget";
+import { animateMultipleLinksBySourceTargetAndColor } from "./graph/animateMultipleLinksBySourceTargetAndColor";
+
 import { animateMultipleNodesByNameAndColor } from "./graph/animateMultipleNodesByNameAndColor";
 import { animateNodeByName } from "./graph/animateNodeByName";
 import { animateNodeByNameAndColor } from "./graph/animateNodeByNameAndColor";
@@ -36,12 +38,17 @@ export type iGraph = {
 };
 
 export type AnimationType = {
-  type: "Link" | "Node1" | "Node2" | "SetNodeSubText" | "RESET" | "MULTI";
+  type:
+    | "Link"
+    | "Node1"
+    | "Node2"
+    | "SetNodeSubText"
+    | "RESET"
+    | "MULTI"
+    | "MULTILINK";
   data: any;
 }[];
 
-const ac = new AbortController();
-let animationInterval;
 @customElement("graph-viz")
 export class GraphViz extends LitElementWw {
   @property() graph: iGraph = {
@@ -99,6 +106,12 @@ export class GraphViz extends LitElementWw {
             currentStep.data.names,
             currentStep.data.colors
           );
+        if (currentStep.type == "MULTILINK")
+          animateMultipleLinksBySourceTargetAndColor(
+            this.svg,
+            currentStep.data.links,
+            currentStep.data.colors
+          );
         if (currentStep.type == "SetNodeSubText")
           setNodeSubText(
             this.svg,
@@ -128,6 +141,48 @@ export class GraphViz extends LitElementWw {
         return;
       }
       if (e.detail.type == "LINK") {
+        if (
+          this.action == "RECORDING" &&
+          this.recording == "LINK" &&
+          this.recordedAnimation[
+            this.recordedAnimation.length - 1
+          ].data.links.every(
+            (link) =>
+              link.source !== e.detail.data.source.name ||
+              link.target !== e.detail.data.target.name
+          )
+        ) {
+          console.log(e.detail);
+          const updatedAnimation = {
+            type: "MULTILINK",
+            data: {
+              links: [
+                ...this.recordedAnimation[this.recordedAnimation.length - 1]
+                  .data.links,
+                {
+                  source: e.detail.data.source.name,
+                  target: e.detail.data.target.name,
+                },
+              ],
+              colors: [
+                ...this.recordedAnimation[this.recordedAnimation.length - 1]
+                  .data.colors,
+                this.animationColor,
+              ],
+            },
+          };
+
+          this.recordedAnimation = [
+            ...this.recordedAnimation.splice(
+              0,
+              this.recordedAnimation.length - 1
+            ),
+            updatedAnimation,
+          ] as AnimationType;
+
+          console.log(this.recordedAnimation);
+          return;
+        }
         if (this.action == "deleteLink") {
           (this.graph as unknown as iGraphAfterRender) = deleteLink(
             this.graph,
@@ -137,6 +192,40 @@ export class GraphViz extends LitElementWw {
         }
       }
       if (e.detail.type == "NODE") {
+        if (
+          this.action == "RECORDING" &&
+          this.recording == "NODE" &&
+          !this.recordedAnimation[
+            this.recordedAnimation.length - 1
+          ].data.names.includes(e.detail.data.name)
+        ) {
+          const updatedAnimation = {
+            type: "MULTI",
+            data: {
+              names: [
+                ...this.recordedAnimation[this.recordedAnimation.length - 1]
+                  .data.names,
+                e.detail.data.name,
+              ],
+              colors: [
+                ...this.recordedAnimation[this.recordedAnimation.length - 1]
+                  .data.colors,
+                this.animationColor,
+              ],
+            },
+          };
+
+          this.recordedAnimation = [
+            ...this.recordedAnimation.splice(
+              0,
+              this.recordedAnimation.length - 1
+            ),
+            updatedAnimation,
+          ] as AnimationType;
+
+          console.log(this.recordedAnimation);
+          return;
+        }
         if (this.action == "delete") {
           (this.graph as unknown as iGraphAfterRender) = deleteNode(
             this.graph,
@@ -226,11 +315,119 @@ export class GraphViz extends LitElementWw {
     this.graph = temp;
   }
 
+  @state() recordedAnimation: AnimationType = [];
+  @state() animationColor: string = "#4a90e2";
+  @state() recording: "NODE" | "LINK" | "" = "";
+
   render() {
     return html`<div>
       <sl-tab-group>
         <sl-tab slot="nav" panel="algo">Algorithm</sl-tab>
+        <sl-tab slot="nav" panel="manual">Manual Animations</sl-tab>
         <sl-tab slot="nav" panel="graph">Graph</sl-tab>
+
+        <sl-tab-panel name="manual">
+          <sl-button
+            @click="${() => {
+              if (this.recording === "LINK") {
+                this.action = "";
+                this.recording = "";
+                document.body.style.cursor = "auto";
+              } else {
+                this.action = "RECORDING";
+                this.recording = "LINK";
+                document.body.style.cursor = "crosshair";
+
+                this.recordedAnimation.push({
+                  type: "MULTILINK",
+                  data: { links: [], colors: [] },
+                });
+              }
+            }}"
+            >${this.recording == "LINK"
+              ? "Stop Recording LINK Animation"
+              : "Record LINK Animation"}</sl-button
+          >
+          <sl-button
+            @click="${() => {
+              if (this.recording === "NODE") {
+                this.action = "";
+                this.recording = "";
+                document.body.style.cursor = "auto";
+              } else {
+                this.action = "RECORDING";
+                this.recording = "NODE";
+                document.body.style.cursor = "crosshair";
+
+                this.recordedAnimation.push({
+                  type: "MULTI",
+                  data: { names: [], colors: [] },
+                });
+              }
+            }}"
+            >${this.recording == "NODE"
+              ? "Stop Recording NODE Animation"
+              : "Record NODE Animation"}</sl-button
+          ><sl-color-picker
+            value=${this.animationColor}
+            label="Select a color"
+            @sl-change=${(e) => (this.animationColor = e.target.value)}
+          ></sl-color-picker>
+
+          <p></p>
+
+          ${this.recordedAnimation.map(
+            (animation, index) => html`<div>
+              <p>${JSON.stringify(animation)}</p>
+              <sl-button
+                @click="${() => {
+                  if (this.recording === "")
+                    this.recordedAnimation = [
+                      ...this.recordedAnimation.filter((_, i) => i !== index),
+                    ];
+                }}"
+                >Remove</sl-button
+              >
+            </div>`
+          )}
+
+          <p></p>
+          <sl-button
+            @click="${async () => {
+              if (this.animationStatus === "STOP") {
+                this.animationStatus = "RUN";
+                this.resetGraph();
+                await delay(200);
+                this.animationPosition = 0;
+                this.animation = [...this.recordedAnimation];
+                this.animateGraph();
+
+                this.action = "";
+              }
+            }}"
+            >Execute</sl-button
+          >
+
+          <sl-button
+            @click="${() => {
+              this.animationStatus = "STOP";
+            }}"
+            >Stop</sl-button
+          >
+          <sl-button
+            @click="${() => {
+              if (this.animationStatus === "RUN") {
+                this.animationStatus = "PAUSE";
+                return;
+              }
+              if (this.animationStatus === "PAUSE") {
+                this.animationStatus = "RUN";
+                this.animateGraph();
+              }
+            }}"
+            >${this.animationStatus == "PAUSE" ? "Play" : "Pause"}</sl-button
+          >
+        </sl-tab-panel>
 
         <sl-tab-panel name="algo">
           <sl-select
@@ -239,7 +436,6 @@ export class GraphViz extends LitElementWw {
             label="Select Algorithm"
           >
             <sl-menu-item value="SPANTREE">Span Tree</sl-menu-item>
-
             <sl-menu-item value="COLORING">Graph Coloring</sl-menu-item>
             <sl-menu-item value="CYCLE">Cycle Detection</sl-menu-item>
             <sl-menu-item value="BFS">BFS</sl-menu-item>
