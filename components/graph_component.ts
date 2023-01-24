@@ -1,5 +1,5 @@
 import { LitElementWw } from "@webwriter/lit";
-import { html } from "lit";
+import { css, html } from "lit";
 import { customElement } from "lit/decorators.js";
 import { property } from "lit/decorators/property.js";
 import { iGraph } from "./../index";
@@ -34,6 +34,17 @@ export class Graph extends LitElementWw {
     });
     this.dispatchEvent(event);
   }
+
+  static styles = css`
+    svg {
+      -webkit-touch-callout: none;
+      -webkit-user-select: none;
+      -khtml-user-select: none;
+      -moz-user-select: none;
+      -ms-user-select: none;
+      user-select: none;
+    }
+  `;
 
   render() {
     return html`<svg class="chart" />`;

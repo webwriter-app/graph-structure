@@ -1,5 +1,7 @@
 export function resetColors(svg) {
   let gnode = svg.selectAll("g");
-  let x = gnode.selectAll(".node");
-  x.transition().style("fill", "red");
+  let nodes = gnode.selectAll(".node");
+  nodes.style("fill", "red");
+  let links = gnode.selectAll(".link");
+  links.attr("stroke", "black");
 }

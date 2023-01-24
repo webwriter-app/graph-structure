@@ -15,6 +15,8 @@ import { animateMultipleLinksBySourceTargetAndColor } from "./graph/animateMulti
 import { animateMultipleNodesByNameAndColor } from "./graph/animateMultipleNodesByNameAndColor";
 import { animateNodeByName } from "./graph/animateNodeByName";
 import { animateNodeByNameAndColor } from "./graph/animateNodeByNameAndColor";
+import { colorGraphForLinkAnimation } from "./graph/colorGraphForLinkAnimation";
+import { colorGraphForNodeAnimation } from "./graph/colorGraphForNodeAnimation";
 import { resetColors } from "./graph/resetColors";
 import { setNodeSubText } from "./graph/setNodeSubText";
 import { delay } from "./utils/sleep";
@@ -141,46 +143,74 @@ export class GraphViz extends LitElementWw {
         return;
       }
       if (e.detail.type == "LINK") {
-        if (
-          this.action == "RECORDING" &&
-          this.recording == "LINK" &&
-          this.recordedAnimation[
-            this.recordedAnimation.length - 1
-          ].data.links.every(
-            (link) =>
-              link.source !== e.detail.data.source.name ||
-              link.target !== e.detail.data.target.name
-          )
-        ) {
-          console.log(e.detail);
-          const updatedAnimation = {
-            type: "MULTILINK",
-            data: {
-              links: [
-                ...this.recordedAnimation[this.recordedAnimation.length - 1]
-                  .data.links,
-                {
-                  source: e.detail.data.source.name,
-                  target: e.detail.data.target.name,
-                },
-              ],
-              colors: [
-                ...this.recordedAnimation[this.recordedAnimation.length - 1]
-                  .data.colors,
-                this.animationColor,
-              ],
-            },
-          };
+        if (this.action == "RECORDING" && this.recording == "LINK") {
+          let updatedAnimation;
+          if (
+            this.recordedAnimation[
+              this.currentAnimationBeingEditet
+            ].data.links.every(
+              (link) =>
+                link.source !== e.detail.data.source.name ||
+                link.target !== e.detail.data.target.name
+            )
+          ) {
+            updatedAnimation = {
+              type: "MULTILINK" as const,
+              data: {
+                links: [
+                  ...this.recordedAnimation[this.currentAnimationBeingEditet]
+                    .data.links,
+                  {
+                    source: e.detail.data.source.name,
+                    target: e.detail.data.target.name,
+                  },
+                ],
+                colors: [
+                  ...this.recordedAnimation[this.currentAnimationBeingEditet]
+                    .data.colors,
+                  this.animationColor,
+                ],
+              },
+            };
+          } else {
+            let indexToRemove = -1;
+            updatedAnimation = {
+              type: "MULTILINK" as const,
+              data: {
+                links: [
+                  ...this.recordedAnimation[
+                    this.currentAnimationBeingEditet
+                  ].data.links.filter((link, index) => {
+                    if (
+                      link.source !== e.detail.data.source.name ||
+                      link.target !== e.detail.data.target.name
+                    ) {
+                      return true;
+                    } else {
+                      indexToRemove = index;
+                      return false;
+                    }
+                  }),
+                ],
+                colors: [
+                  ...this.recordedAnimation[
+                    this.currentAnimationBeingEditet
+                  ].data.colors.filter((_, index) => index !== indexToRemove),
+                ],
+              },
+            };
+          }
 
-          this.recordedAnimation = [
-            ...this.recordedAnimation.splice(
-              0,
-              this.recordedAnimation.length - 1
-            ),
-            updatedAnimation,
-          ] as AnimationType;
+          const newRecordedAnimations = [...this.recordedAnimation];
+          newRecordedAnimations[this.currentAnimationBeingEditet] =
+            updatedAnimation;
+          this.recordedAnimation = [...newRecordedAnimations];
 
-          console.log(this.recordedAnimation);
+          colorGraphForLinkAnimation(
+            this.svg,
+            updatedAnimation.data.links,
+            updatedAnimation.data.colors
+          );
           return;
         }
         if (this.action == "deleteLink") {
@@ -192,38 +222,62 @@ export class GraphViz extends LitElementWw {
         }
       }
       if (e.detail.type == "NODE") {
-        if (
-          this.action == "RECORDING" &&
-          this.recording == "NODE" &&
-          !this.recordedAnimation[
-            this.recordedAnimation.length - 1
-          ].data.names.includes(e.detail.data.name)
-        ) {
-          const updatedAnimation = {
-            type: "MULTI",
-            data: {
-              names: [
-                ...this.recordedAnimation[this.recordedAnimation.length - 1]
-                  .data.names,
-                e.detail.data.name,
-              ],
-              colors: [
-                ...this.recordedAnimation[this.recordedAnimation.length - 1]
-                  .data.colors,
-                this.animationColor,
-              ],
-            },
-          };
+        if (this.action == "RECORDING" && this.recording == "NODE") {
+          let updatedAnimation;
+          if (
+            !this.recordedAnimation[
+              this.currentAnimationBeingEditet
+            ].data.names.includes(e.detail.data.name)
+          ) {
+            updatedAnimation = {
+              type: "MULTI" as const,
+              data: {
+                names: [
+                  ...this.recordedAnimation[this.currentAnimationBeingEditet]
+                    .data.names,
+                  e.detail.data.name,
+                ],
+                colors: [
+                  ...this.recordedAnimation[this.currentAnimationBeingEditet]
+                    .data.colors,
+                  this.animationColor,
+                ],
+              },
+            };
+          } else {
+            let indexToRemove = -1;
+            updatedAnimation = {
+              type: "MULTI" as const,
+              data: {
+                names: [
+                  ...this.recordedAnimation[
+                    this.currentAnimationBeingEditet
+                  ].data.names.filter((node, index) => {
+                    if (node == e.detail.data.name) {
+                      indexToRemove = index;
+                      return false;
+                    } else {
+                      return true;
+                    }
+                  }),
+                ],
+                colors: this.recordedAnimation[
+                  this.currentAnimationBeingEditet
+                ].data.colors.filter((_, index) => index !== indexToRemove),
+              },
+            };
+          }
 
-          this.recordedAnimation = [
-            ...this.recordedAnimation.splice(
-              0,
-              this.recordedAnimation.length - 1
-            ),
-            updatedAnimation,
-          ] as AnimationType;
+          const newRecordedAnimations = [...this.recordedAnimation];
+          newRecordedAnimations[this.currentAnimationBeingEditet] =
+            updatedAnimation;
+          this.recordedAnimation = [...newRecordedAnimations];
 
-          console.log(this.recordedAnimation);
+          colorGraphForNodeAnimation(
+            this.svg,
+            updatedAnimation.data.names,
+            updatedAnimation.data.colors
+          );
           return;
         }
         if (this.action == "delete") {
@@ -268,7 +322,6 @@ export class GraphViz extends LitElementWw {
           if (this.algorithm == "DIJKSTRA") {
             this.animation = dijkstra(e.detail.data, this.graph);
           }
-          console.log(this.animation);
           this.animationStatus = "RUN";
           this.animateGraph();
 
@@ -318,6 +371,7 @@ export class GraphViz extends LitElementWw {
   @state() recordedAnimation: AnimationType = [];
   @state() animationColor: string = "#4a90e2";
   @state() recording: "NODE" | "LINK" | "" = "";
+  @state() currentAnimationBeingEditet: undefined | number = undefined;
 
   render() {
     return html`<div>
@@ -329,45 +383,37 @@ export class GraphViz extends LitElementWw {
         <sl-tab-panel name="manual">
           <sl-button
             @click="${() => {
-              if (this.recording === "LINK") {
-                this.action = "";
-                this.recording = "";
-                document.body.style.cursor = "auto";
-              } else {
-                this.action = "RECORDING";
-                this.recording = "LINK";
-                document.body.style.cursor = "crosshair";
+              this.action = "RECORDING";
+              this.recording = "LINK";
+              document.body.style.cursor = "crosshair";
 
-                this.recordedAnimation.push({
-                  type: "MULTILINK",
-                  data: { links: [], colors: [] },
-                });
-              }
+              this.recordedAnimation.push({
+                type: "MULTILINK",
+                data: { links: [], colors: [] },
+              });
+              this.currentAnimationBeingEditet =
+                this.recordedAnimation.length - 1;
+
+              colorGraphForLinkAnimation(this.svg, [], []);
             }}"
-            >${this.recording == "LINK"
-              ? "Stop Recording LINK Animation"
-              : "Record LINK Animation"}</sl-button
+          >
+            Add LINK Animation</sl-button
           >
           <sl-button
             @click="${() => {
-              if (this.recording === "NODE") {
-                this.action = "";
-                this.recording = "";
-                document.body.style.cursor = "auto";
-              } else {
-                this.action = "RECORDING";
-                this.recording = "NODE";
-                document.body.style.cursor = "crosshair";
+              this.action = "RECORDING";
+              this.recording = "NODE";
+              document.body.style.cursor = "crosshair";
 
-                this.recordedAnimation.push({
-                  type: "MULTI",
-                  data: { names: [], colors: [] },
-                });
-              }
+              this.recordedAnimation.push({
+                type: "MULTI",
+                data: { names: [], colors: [] },
+              });
+              this.currentAnimationBeingEditet =
+                this.recordedAnimation.length - 1;
+              colorGraphForNodeAnimation(this.svg, [], []);
             }}"
-            >${this.recording == "NODE"
-              ? "Stop Recording NODE Animation"
-              : "Record NODE Animation"}</sl-button
+            >Add NODE Animation</sl-button
           ><sl-color-picker
             value=${this.animationColor}
             label="Select a color"
@@ -378,16 +424,46 @@ export class GraphViz extends LitElementWw {
 
           ${this.recordedAnimation.map(
             (animation, index) => html`<div>
-              <p>${JSON.stringify(animation)}</p>
-              <sl-button
-                @click="${() => {
-                  if (this.recording === "")
+              <p>
+                <sl-button
+                  variant=${this.currentAnimationBeingEditet == index
+                    ? "danger"
+                    : "default"}
+                  @click="${() => {
+                    this.animationStatus = "STOP";
+                    this.currentAnimationBeingEditet = index;
+                    if (animation.type == "MULTI") {
+                      this.recording = "NODE";
+                      colorGraphForNodeAnimation(
+                        this.svg,
+                        animation.data.names,
+                        animation.data.colors
+                      );
+                    }
+                    if (animation.type == "MULTILINK") {
+                      this.recording = "LINK";
+                      colorGraphForLinkAnimation(
+                        this.svg,
+                        animation.data.links,
+                        animation.data.colors
+                      );
+                    }
+                    document.body.style.cursor = "crosshair";
+                  }}"
+                  >Select</sl-button
+                >${JSON.stringify(animation)}
+                <sl-button
+                  @click="${() => {
                     this.recordedAnimation = [
                       ...this.recordedAnimation.filter((_, i) => i !== index),
                     ];
-                }}"
-                >Remove</sl-button
-              >
+                    this.currentAnimationBeingEditet = undefined;
+                    this.recording = "";
+                    document.body.style.cursor = "auto";
+                  }}"
+                  >Remove</sl-button
+                >
+              </p>
             </div>`
           )}
 
@@ -395,6 +471,8 @@ export class GraphViz extends LitElementWw {
           <sl-button
             @click="${async () => {
               if (this.animationStatus === "STOP") {
+                document.body.style.cursor = "auto";
+                this.currentAnimationBeingEditet = undefined;
                 this.animationStatus = "RUN";
                 this.resetGraph();
                 await delay(200);
@@ -436,7 +514,9 @@ export class GraphViz extends LitElementWw {
             label="Select Algorithm"
           >
             <sl-menu-item value="SPANTREE">Span Tree</sl-menu-item>
-            <sl-menu-item value="COLORING">Graph Coloring</sl-menu-item>
+            <sl-menu-item value="COLORING"
+              >Graph Coloring (Brute Force)</sl-menu-item
+            >
             <sl-menu-item value="CYCLE">Cycle Detection</sl-menu-item>
             <sl-menu-item value="BFS">BFS</sl-menu-item>
             <sl-menu-item value="DFS">DFS</sl-menu-item>

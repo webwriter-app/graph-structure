@@ -54,7 +54,7 @@ export function buildChart(svg, width, height, graph) {
   });
 
   var glink = svg
-    .on("click", async (d, i) => {
+    .on("mousedown", async (d, i) => {
       const event = new CustomEvent("my-event", {
         bubbles: true,
         composed: true,
@@ -77,7 +77,7 @@ export function buildChart(svg, width, height, graph) {
     .attr("stroke-width", function (d) {
       return 3;
     })
-    .on("click", async (d, i) => {
+    .on("mousedown", async (d, i) => {
       const event = new CustomEvent("my-event", {
         bubbles: true,
         composed: true,
@@ -92,7 +92,7 @@ export function buildChart(svg, width, height, graph) {
       return "linktext " + d.source.name + d.target.name;
     })
 
-    .on("click", async (d, i) => {
+    .on("mousedown", async (d, i) => {
       const event = new CustomEvent("my-event", {
         bubbles: true,
         composed: true,
@@ -119,7 +119,7 @@ export function buildChart(svg, width, height, graph) {
     })
     .attr("r", radius - 0.75)
     .attr("fill", "red")
-    .on("click", async (d, i) => {
+    .on("mousedown", async (d, i) => {
       const event = new CustomEvent("my-event", {
         bubbles: true,
         composed: true,
@@ -150,7 +150,7 @@ export function buildChart(svg, width, height, graph) {
     .text(function (d) {
       return d.name;
     })
-    .on("click", async (d, i) => {
+    .on("mousedown", async (d, i) => {
       const event = new CustomEvent("my-event", {
         bubbles: true,
         composed: true,
@@ -180,7 +180,7 @@ export function buildChart(svg, width, height, graph) {
       return "nodesubtext " + d.name;
     })
 
-    .on("click", async (d, i) => {
+    .on("mousedown", async (d, i) => {
       const event = new CustomEvent("my-event", {
         bubbles: true,
         composed: true,
