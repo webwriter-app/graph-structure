@@ -21,12 +21,15 @@ export function bfs(start, graph, target) {
   while (queue.length != 0) {
     let current = queue.pop();
 
-    animation.push({ type: "Node1", data: current.name as string });
+    animation.push({
+      type: "NODE",
+      data: { names: [current.name], colors: ["green"] },
+    });
 
     if (current.name == target) {
       animation.push({
-        type: "Node2",
-        data: { name: current.name as string, color: "#32CD32" },
+        type: "NODE",
+        data: { names: [current.name], colors: ["#32CD32"] },
       });
       return animation;
     }

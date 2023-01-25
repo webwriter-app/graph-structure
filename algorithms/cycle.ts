@@ -20,13 +20,16 @@ export function cycle(graph) {
     if (visited[current.name]) {
       if (current.name == start) {
         animation.push({
-          type: "MULTI",
+          type: "NODE",
           data: { names: path, colors: path.map((x) => "#32CD32") },
         });
       }
       return;
     }
-    animation.push({ type: "Node1", data: current.name as string });
+    animation.push({
+      type: "NODE",
+      data: { names: [current.name], colors: ["green"] },
+    });
 
     visited[current.name] = true;
     for (let node = 0; node < adjacent[current.name].length; node++) {

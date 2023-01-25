@@ -34,14 +34,20 @@ export const dijkstra = (start, graph) => {
   });
   while (q.length > 0) {
     var u = getNodeWithLowestDist(q, dist);
-    animation.push({ type: "Node1", data: u.name as string });
+    animation.push({
+      type: "NODE",
+      data: { names: [u.name], colors: ["green"] },
+    });
     q = q.filter((e) => e.name !== u.name);
 
     for (var n of neighbors[u.name]) {
       var alt = dist[u.name] + n.weight;
       animation.push({
-        type: "Link",
-        data: { source: u.name, target: n.name },
+        type: "LINK",
+        data: {
+          links: [{ source: u.name, target: n.name }],
+          colors: ["green"],
+        },
       });
 
       if (alt < dist[n.name]) {

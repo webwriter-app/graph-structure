@@ -71,8 +71,11 @@ export function spanTree(graph) {
         ) {
           edgesOfSpan.push(edge);
           animation.push({
-            type: "Link",
-            data: { source: edge.source.name, target: edge.target.name },
+            type: "LINK",
+            data: {
+              links: [{ source: edge.source.name, target: edge.target.name }],
+              colors: ["green"],
+            },
           });
         }
       }

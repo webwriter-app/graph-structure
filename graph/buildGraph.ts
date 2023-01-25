@@ -54,14 +54,7 @@ export function buildChart(svg, width, height, graph) {
   });
 
   var glink = svg
-    .on("mousedown", async (d, i) => {
-      const event = new CustomEvent("my-event", {
-        bubbles: true,
-        composed: true,
-        detail: { data: i, type: "SVG" },
-      });
-      d.srcElement.dispatchEvent(event);
-    })
+    .on("mousedown", async (d, i) => dispatchEvent(d, i, "SVG"))
     .append("g")
     .attr("class", "links")
     .selectAll(".link")
@@ -77,14 +70,7 @@ export function buildChart(svg, width, height, graph) {
     .attr("stroke-width", function (d) {
       return 3;
     })
-    .on("mousedown", async (d, i) => {
-      const event = new CustomEvent("my-event", {
-        bubbles: true,
-        composed: true,
-        detail: { data: i, type: "LINK" },
-      });
-      d.srcElement.dispatchEvent(event);
-    });
+    .on("mousedown", async (d, i) => dispatchEvent(d, i, "LINK"));
 
   var linktext = glink
     .append("text")
@@ -92,14 +78,7 @@ export function buildChart(svg, width, height, graph) {
       return "linktext " + d.source.name + d.target.name;
     })
 
-    .on("mousedown", async (d, i) => {
-      const event = new CustomEvent("my-event", {
-        bubbles: true,
-        composed: true,
-        detail: { data: i, type: "LINK" },
-      });
-      d.srcElement.dispatchEvent(event);
-    })
+    .on("mousedown", async (d, i) => dispatchEvent(d, i, "LINK"))
 
     .attr("text-anchor", "middle")
     .text(function (d) {
@@ -119,14 +98,7 @@ export function buildChart(svg, width, height, graph) {
     })
     .attr("r", radius - 0.75)
     .attr("fill", "red")
-    .on("mousedown", async (d, i) => {
-      const event = new CustomEvent("my-event", {
-        bubbles: true,
-        composed: true,
-        detail: { data: i, type: "NODE" },
-      });
-      d.srcElement.dispatchEvent(event);
-    })
+    .on("mousedown", async (d, i) => dispatchEvent(d, i, "NODE"))
     .call(
       d3
         .drag()
@@ -150,14 +122,7 @@ export function buildChart(svg, width, height, graph) {
     .text(function (d) {
       return d.name;
     })
-    .on("mousedown", async (d, i) => {
-      const event = new CustomEvent("my-event", {
-        bubbles: true,
-        composed: true,
-        detail: { data: i, type: "NODE" },
-      });
-      d.srcElement.dispatchEvent(event);
-    })
+    .on("mousedown", async (d, i) => dispatchEvent(d, i, "NODE"))
     .on("mouseover", function (d, i) {
       gnode.selectAll(".node." + i.name).attr("r", emphSize);
     })
@@ -180,14 +145,7 @@ export function buildChart(svg, width, height, graph) {
       return "nodesubtext " + d.name;
     })
 
-    .on("mousedown", async (d, i) => {
-      const event = new CustomEvent("my-event", {
-        bubbles: true,
-        composed: true,
-        detail: { data: i, type: "NODE" },
-      });
-      d.srcElement.dispatchEvent(event);
-    })
+    .on("mousedown", async (d, i) => dispatchEvent(d, i, "NODE"))
     .on("mouseover", function (d, i) {
       gnode.selectAll(".node." + i.name).attr("r", emphSize);
     })
@@ -262,4 +220,13 @@ export function buildChart(svg, width, height, graph) {
     d.fx = null;
     d.fy = null;
   }
+}
+
+function dispatchEvent(d, i, type) {
+  const event = new CustomEvent("my-event", {
+    bubbles: true,
+    composed: true,
+    detail: { data: i, type },
+  });
+  d.srcElement.dispatchEvent(event);
 }

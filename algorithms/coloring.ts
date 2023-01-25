@@ -20,7 +20,7 @@ export function coloring(graph) {
 
   if (graph.nodes.length == 1) return;
 
-  for (let maxColors = 2; maxColors < graph.nodes.length; maxColors++) {
+  for (let maxColors = 2; maxColors <= graph.nodes.length; maxColors++) {
     if (coloredRight(colors, graph, adjacent)) break;
     while (
       !coloredRight(colors, graph, adjacent) &&
@@ -38,7 +38,7 @@ function nextColoring(colors, maxColors, graph) {
   let newColoring = [...colors];
   let animation: AnimationType = [
     {
-      type: "MULTI",
+      type: "NODE",
       data: { names: [], colors: [] },
     },
   ];

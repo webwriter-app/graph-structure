@@ -9,12 +9,10 @@ import { dfs } from "./algorithms/dfs";
 import { dijkstra } from "./algorithms/dijkstra";
 import { spanTree } from "./algorithms/spanTree";
 import "./components/graph_component.ts";
-import { animateLinkBySourceTarget } from "./graph/animateLinkBySourceTarget";
 import { animateMultipleLinksBySourceTargetAndColor } from "./graph/animateMultipleLinksBySourceTargetAndColor";
 
 import { animateMultipleNodesByNameAndColor } from "./graph/animateMultipleNodesByNameAndColor";
-import { animateNodeByName } from "./graph/animateNodeByName";
-import { animateNodeByNameAndColor } from "./graph/animateNodeByNameAndColor";
+
 import { colorGraphForLinkAnimation } from "./graph/colorGraphForLinkAnimation";
 import { colorGraphForNodeAnimation } from "./graph/colorGraphForNodeAnimation";
 import { resetColors } from "./graph/resetColors";
@@ -40,14 +38,7 @@ export type iGraph = {
 };
 
 export type AnimationType = {
-  type:
-    | "Link"
-    | "Node1"
-    | "Node2"
-    | "SetNodeSubText"
-    | "RESET"
-    | "MULTI"
-    | "MULTILINK";
+  type: "SetNodeSubText" | "RESET" | "NODE" | "LINK";
   data: any;
 }[];
 
@@ -87,28 +78,16 @@ export class GraphViz extends LitElementWw {
     if (this.animationStatus === "RUN") {
       if (this.animationPosition < this.animation.length) {
         const currentStep = this.animation[this.animationPosition];
-        if (currentStep.type == "Link")
-          animateLinkBySourceTarget(
-            this.svg,
-            currentStep.data.source,
-            currentStep.data.target
-          );
+
         if (currentStep.type == "RESET") resetColors(this.svg);
-        if (currentStep.type == "Node1")
-          animateNodeByName(this.svg, currentStep.data);
-        if (currentStep.type == "Node2")
-          animateNodeByNameAndColor(
-            this.svg,
-            currentStep.data.name,
-            currentStep.data.color
-          );
-        if (currentStep.type == "MULTI")
+
+        if (currentStep.type == "NODE")
           animateMultipleNodesByNameAndColor(
             this.svg,
             currentStep.data.names,
             currentStep.data.colors
           );
-        if (currentStep.type == "MULTILINK")
+        if (currentStep.type == "LINK")
           animateMultipleLinksBySourceTargetAndColor(
             this.svg,
             currentStep.data.links,
@@ -155,7 +134,7 @@ export class GraphViz extends LitElementWw {
             )
           ) {
             updatedAnimation = {
-              type: "MULTILINK" as const,
+              type: "LINK" as const,
               data: {
                 links: [
                   ...this.recordedAnimation[this.currentAnimationBeingEditet]
@@ -175,7 +154,7 @@ export class GraphViz extends LitElementWw {
           } else {
             let indexToRemove = -1;
             updatedAnimation = {
-              type: "MULTILINK" as const,
+              type: "LINK" as const,
               data: {
                 links: [
                   ...this.recordedAnimation[
@@ -230,7 +209,7 @@ export class GraphViz extends LitElementWw {
             ].data.names.includes(e.detail.data.name)
           ) {
             updatedAnimation = {
-              type: "MULTI" as const,
+              type: "NODE" as const,
               data: {
                 names: [
                   ...this.recordedAnimation[this.currentAnimationBeingEditet]
@@ -247,7 +226,7 @@ export class GraphViz extends LitElementWw {
           } else {
             let indexToRemove = -1;
             updatedAnimation = {
-              type: "MULTI" as const,
+              type: "NODE" as const,
               data: {
                 names: [
                   ...this.recordedAnimation[
@@ -388,7 +367,7 @@ export class GraphViz extends LitElementWw {
               document.body.style.cursor = "crosshair";
 
               this.recordedAnimation.push({
-                type: "MULTILINK",
+                type: "LINK",
                 data: { links: [], colors: [] },
               });
               this.currentAnimationBeingEditet =
@@ -406,7 +385,7 @@ export class GraphViz extends LitElementWw {
               document.body.style.cursor = "crosshair";
 
               this.recordedAnimation.push({
-                type: "MULTI",
+                type: "NODE",
                 data: { names: [], colors: [] },
               });
               this.currentAnimationBeingEditet =
@@ -432,7 +411,7 @@ export class GraphViz extends LitElementWw {
                   @click="${() => {
                     this.animationStatus = "STOP";
                     this.currentAnimationBeingEditet = index;
-                    if (animation.type == "MULTI") {
+                    if (animation.type == "NODE") {
                       this.recording = "NODE";
                       colorGraphForNodeAnimation(
                         this.svg,
@@ -440,7 +419,7 @@ export class GraphViz extends LitElementWw {
                         animation.data.colors
                       );
                     }
-                    if (animation.type == "MULTILINK") {
+                    if (animation.type == "LINK") {
                       this.recording = "LINK";
                       colorGraphForLinkAnimation(
                         this.svg,

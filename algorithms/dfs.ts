@@ -20,12 +20,15 @@ export function dfs(start, graph, target) {
   while (stack.length != 0) {
     // Pop a vertex from stack and print it
     let current = stack.pop();
-    animation.push({ type: "Node1", data: current.name as string });
+    animation.push({
+      type: "NODE",
+      data: { names: [current.name], colors: ["green"] },
+    });
 
     if (current.name == target) {
       animation.push({
-        type: "Node2",
-        data: { name: current.name as string, color: "#32CD32" },
+        type: "NODE",
+        data: { names: [current.name], colors: ["#32CD32"] },
       });
       return animation;
     }
