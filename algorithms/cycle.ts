@@ -1,4 +1,4 @@
-import { AnimationType } from "..";
+import { AnimationType } from "../types";
 
 export function cycle(graph) {
   let animation: AnimationType = [];

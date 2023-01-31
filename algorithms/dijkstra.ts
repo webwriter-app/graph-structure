@@ -1,4 +1,4 @@
-import { AnimationType } from "..";
+import { AnimationType } from "iGraph";
 
 export const dijkstra = (start, graph) => {
   let animation: AnimationType = [];

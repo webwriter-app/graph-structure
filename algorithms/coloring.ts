@@ -1,4 +1,4 @@
-import { AnimationType } from "..";
+import { AnimationType } from "iGraph";
 
 export function coloring(graph) {
   let animation: AnimationType = [];

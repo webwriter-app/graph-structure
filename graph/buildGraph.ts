@@ -223,7 +223,7 @@ export function buildChart(svg, width, height, graph) {
 }
 
 function dispatchEvent(d, i, type) {
-  const event = new CustomEvent("my-event", {
+  const event = new CustomEvent("svg-graph-event", {
     bubbles: true,
     composed: true,
     detail: { data: i, type },

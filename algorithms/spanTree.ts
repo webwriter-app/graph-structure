@@ -1,4 +1,4 @@
-import { AnimationType } from "..";
+import { AnimationType } from "iGraph";
 
 export function spanTree(graph) {
   let animation: AnimationType = [];

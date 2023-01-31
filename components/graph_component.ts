@@ -2,7 +2,7 @@ import { LitElementWw } from "@webwriter/lit";
 import { css, html } from "lit";
 import { customElement } from "lit/decorators.js";
 import { property } from "lit/decorators/property.js";
-import { iGraph } from "./../index";
+import { iGraph } from "../types";
 
 import { select } from "d3-selection";
 import { buildChart } from "../graph/buildGraph";
