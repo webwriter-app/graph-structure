@@ -25,7 +25,6 @@ export class ManualAnimations extends LitElementWw {
 
   @property({ type: String }) currentTab: string = "algo";
   @property({ type: String }) animationStatus: AnimationStatusType = "STOP";
-  @property({ type: Object }) event: CustomEvent = null;
 
   @state() action: string = "";
   @state() recordedAnimation: AnimationType = [];
@@ -33,156 +32,162 @@ export class ManualAnimations extends LitElementWw {
   @state() recording: "NODE" | "LINK" | "" = "";
   @state() currentAnimationBeingEditet: undefined | number = undefined;
 
+  protected firstUpdated(
+    _changedProperties: PropertyValueMap<any> | Map<PropertyKey, unknown>
+  ): void {
+    document
+      .querySelector("#main")
+      .shadowRoot.querySelector("graph-graph")
+      .addEventListener("svg-graph-event", (e: CustomEvent) => {
+        if (this.currentTab !== "manual") return;
+        if (e.detail.type == "LINK") {
+          if (
+            this.action == "RECORDING" &&
+            this.recording == "LINK" &&
+            this.recordedAnimation[this.currentAnimationBeingEditet]
+          ) {
+            let updatedAnimation;
+            if (
+              this.recordedAnimation[
+                this.currentAnimationBeingEditet
+              ].data.links.every(
+                (link) =>
+                  link.source !== e.detail.data.source.name ||
+                  link.target !== e.detail.data.target.name
+              )
+            ) {
+              updatedAnimation = {
+                type: "LINK" as const,
+                data: {
+                  links: [
+                    ...this.recordedAnimation[this.currentAnimationBeingEditet]
+                      .data.links,
+                    {
+                      source: e.detail.data.source.name,
+                      target: e.detail.data.target.name,
+                    },
+                  ],
+                  colors: [
+                    ...this.recordedAnimation[this.currentAnimationBeingEditet]
+                      .data.colors,
+                    this.animationColor,
+                  ],
+                },
+              };
+            } else {
+              let indexToRemove = -1;
+              updatedAnimation = {
+                type: "LINK" as const,
+                data: {
+                  links: [
+                    ...this.recordedAnimation[
+                      this.currentAnimationBeingEditet
+                    ].data.links.filter((link, index) => {
+                      if (
+                        link.source !== e.detail.data.source.name ||
+                        link.target !== e.detail.data.target.name
+                      ) {
+                        return true;
+                      } else {
+                        indexToRemove = index;
+                        return false;
+                      }
+                    }),
+                  ],
+                  colors: [
+                    ...this.recordedAnimation[
+                      this.currentAnimationBeingEditet
+                    ].data.colors.filter((_, index) => index !== indexToRemove),
+                  ],
+                },
+              };
+            }
+
+            const newRecordedAnimations = [...this.recordedAnimation];
+            newRecordedAnimations[this.currentAnimationBeingEditet] =
+              updatedAnimation;
+            this.recordedAnimation = [...newRecordedAnimations];
+
+            colorGraphForLinkAnimation(
+              this.svg,
+              updatedAnimation.data.links,
+              updatedAnimation.data.colors
+            );
+            return;
+          }
+        }
+        if (e.detail.type == "NODE") {
+          if (
+            this.action == "RECORDING" &&
+            this.recording == "NODE" &&
+            this.recordedAnimation[this.currentAnimationBeingEditet]
+          ) {
+            let updatedAnimation;
+            if (
+              !this.recordedAnimation[
+                this.currentAnimationBeingEditet
+              ].data.names.includes(e.detail.data.name)
+            ) {
+              updatedAnimation = {
+                type: "NODE" as const,
+                data: {
+                  names: [
+                    ...this.recordedAnimation[this.currentAnimationBeingEditet]
+                      .data.names,
+                    e.detail.data.name,
+                  ],
+                  colors: [
+                    ...this.recordedAnimation[this.currentAnimationBeingEditet]
+                      .data.colors,
+                    this.animationColor,
+                  ],
+                },
+              };
+            } else {
+              let indexToRemove = -1;
+              updatedAnimation = {
+                type: "NODE" as const,
+                data: {
+                  names: [
+                    ...this.recordedAnimation[
+                      this.currentAnimationBeingEditet
+                    ].data.names.filter((node, index) => {
+                      if (node == e.detail.data.name) {
+                        indexToRemove = index;
+                        return false;
+                      } else {
+                        return true;
+                      }
+                    }),
+                  ],
+                  colors: this.recordedAnimation[
+                    this.currentAnimationBeingEditet
+                  ].data.colors.filter((_, index) => index !== indexToRemove),
+                },
+              };
+            }
+
+            const newRecordedAnimations = [...this.recordedAnimation];
+            newRecordedAnimations[this.currentAnimationBeingEditet] =
+              updatedAnimation;
+            this.recordedAnimation = [...newRecordedAnimations];
+
+            colorGraphForNodeAnimation(
+              this.svg,
+              updatedAnimation.data.names,
+              updatedAnimation.data.colors
+            );
+            return;
+          }
+        }
+      });
+  }
+
   protected updated(
     _changedProperties: PropertyValueMap<any> | Map<PropertyKey, unknown>
   ): void {
     if (_changedProperties.has("currentTab")) {
       this.currentAnimationBeingEditet = undefined;
-    }
-    const e = this.event;
-    if (!e) return;
-    if (_changedProperties.has("event")) {
-      if (this.currentTab !== "manual") return;
-      if (e.detail.type == "LINK") {
-        if (
-          this.action == "RECORDING" &&
-          this.recording == "LINK" &&
-          this.recordedAnimation[this.currentAnimationBeingEditet]
-        ) {
-          let updatedAnimation;
-          if (
-            this.recordedAnimation[
-              this.currentAnimationBeingEditet
-            ].data.links.every(
-              (link) =>
-                link.source !== e.detail.data.source.name ||
-                link.target !== e.detail.data.target.name
-            )
-          ) {
-            updatedAnimation = {
-              type: "LINK" as const,
-              data: {
-                links: [
-                  ...this.recordedAnimation[this.currentAnimationBeingEditet]
-                    .data.links,
-                  {
-                    source: e.detail.data.source.name,
-                    target: e.detail.data.target.name,
-                  },
-                ],
-                colors: [
-                  ...this.recordedAnimation[this.currentAnimationBeingEditet]
-                    .data.colors,
-                  this.animationColor,
-                ],
-              },
-            };
-          } else {
-            let indexToRemove = -1;
-            updatedAnimation = {
-              type: "LINK" as const,
-              data: {
-                links: [
-                  ...this.recordedAnimation[
-                    this.currentAnimationBeingEditet
-                  ].data.links.filter((link, index) => {
-                    if (
-                      link.source !== e.detail.data.source.name ||
-                      link.target !== e.detail.data.target.name
-                    ) {
-                      return true;
-                    } else {
-                      indexToRemove = index;
-                      return false;
-                    }
-                  }),
-                ],
-                colors: [
-                  ...this.recordedAnimation[
-                    this.currentAnimationBeingEditet
-                  ].data.colors.filter((_, index) => index !== indexToRemove),
-                ],
-              },
-            };
-          }
-
-          const newRecordedAnimations = [...this.recordedAnimation];
-          newRecordedAnimations[this.currentAnimationBeingEditet] =
-            updatedAnimation;
-          this.recordedAnimation = [...newRecordedAnimations];
-
-          colorGraphForLinkAnimation(
-            this.svg,
-            updatedAnimation.data.links,
-            updatedAnimation.data.colors
-          );
-          return;
-        }
-      }
-      if (e.detail.type == "NODE") {
-        if (
-          this.action == "RECORDING" &&
-          this.recording == "NODE" &&
-          this.recordedAnimation[this.currentAnimationBeingEditet]
-        ) {
-          let updatedAnimation;
-          if (
-            !this.recordedAnimation[
-              this.currentAnimationBeingEditet
-            ].data.names.includes(e.detail.data.name)
-          ) {
-            updatedAnimation = {
-              type: "NODE" as const,
-              data: {
-                names: [
-                  ...this.recordedAnimation[this.currentAnimationBeingEditet]
-                    .data.names,
-                  e.detail.data.name,
-                ],
-                colors: [
-                  ...this.recordedAnimation[this.currentAnimationBeingEditet]
-                    .data.colors,
-                  this.animationColor,
-                ],
-              },
-            };
-          } else {
-            let indexToRemove = -1;
-            updatedAnimation = {
-              type: "NODE" as const,
-              data: {
-                names: [
-                  ...this.recordedAnimation[
-                    this.currentAnimationBeingEditet
-                  ].data.names.filter((node, index) => {
-                    if (node == e.detail.data.name) {
-                      indexToRemove = index;
-                      return false;
-                    } else {
-                      return true;
-                    }
-                  }),
-                ],
-                colors: this.recordedAnimation[
-                  this.currentAnimationBeingEditet
-                ].data.colors.filter((_, index) => index !== indexToRemove),
-              },
-            };
-          }
-
-          const newRecordedAnimations = [...this.recordedAnimation];
-          newRecordedAnimations[this.currentAnimationBeingEditet] =
-            updatedAnimation;
-          this.recordedAnimation = [...newRecordedAnimations];
-
-          colorGraphForNodeAnimation(
-            this.svg,
-            updatedAnimation.data.names,
-            updatedAnimation.data.colors
-          );
-          return;
-        }
-      }
     }
   }
 

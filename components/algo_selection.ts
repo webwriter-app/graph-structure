@@ -22,14 +22,13 @@ import { delay } from "../utils/sleep";
 export class AlgoSelection extends LitElementWw {
   @property({ type: String }) currentTab: string = "algo";
   @property({ type: String }) animationStatus: AnimationStatusType = "STOP";
-  @property({ type: Object }) event: CustomEvent = null;
   @property({ type: Object }) graph: iGraph = {
     newLink: "",
     nodes: [],
     links: [],
   };
 
-  @state() action: string = "";
+  @state() private action: string = "";
   @state() private target: string = "";
   @state() private algorithm:
     | "DFS"
@@ -39,30 +38,33 @@ export class AlgoSelection extends LitElementWw {
     | "BFS"
     | "COLORING" = "SPANTREE";
 
-  protected updated(
+  protected firstUpdated(
     _changedProperties: PropertyValueMap<any> | Map<PropertyKey, unknown>
   ): void {
-    const e = this.event;
-    if (!e) return;
-    if (_changedProperties.has("event")) {
-      if (this.action == "execute") {
-        if (this.algorithm == "BFS") {
-          setAnimation(bfs(e.detail.data, this.graph, this.target), this);
-        }
-        if (this.algorithm == "DFS") {
-          setAnimation(dfs(e.detail.data, this.graph, this.target), this);
-        }
-        if (this.algorithm == "DIJKSTRA") {
-          setAnimation(dijkstra(e.detail.data, this.graph), this);
-        }
-        this.animationStatus = "RUN";
-        dispatchAnimationEvent(this);
+    document
+      .querySelector("#main")
+      .shadowRoot.querySelector("graph-graph")
+      .addEventListener("svg-graph-event", (e: CustomEvent) => {
+        if (e.detail.type == "NODE") {
+          if (this.action == "execute") {
+            if (this.algorithm == "BFS") {
+              setAnimation(bfs(e.detail.data, this.graph, this.target), this);
+            }
+            if (this.algorithm == "DFS") {
+              setAnimation(dfs(e.detail.data, this.graph, this.target), this);
+            }
+            if (this.algorithm == "DIJKSTRA") {
+              setAnimation(dijkstra(e.detail.data, this.graph), this);
+            }
+            this.animationStatus = "RUN";
+            dispatchAnimationEvent(this);
 
-        this.action = "";
-        document.body.style.cursor = "auto";
-        return;
-      }
-    }
+            this.action = "";
+            document.body.style.cursor = "auto";
+            return;
+          }
+        }
+      });
   }
 
   render() {

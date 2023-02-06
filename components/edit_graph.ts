@@ -15,7 +15,6 @@ import {
 @customElement("edit-graph")
 export class EditGraph extends LitElementWw {
   @property({ type: String }) currentTab: string = "algo";
-  @property({ type: Object }) event: CustomEvent = null;
   @property({ type: Object }) graph: iGraph = {
     newLink: "",
     nodes: [],
@@ -37,74 +36,79 @@ export class EditGraph extends LitElementWw {
     );
   }
 
-  protected updated(
+  protected firstUpdated(
     _changedProperties: PropertyValueMap<any> | Map<PropertyKey, unknown>
   ): void {
-    const e = this.event;
-    if (!e) return;
-    if (_changedProperties.has("event")) {
-      if (this.currentTab !== "graph") return;
+    document
+      .querySelector("#main")
+      .shadowRoot.querySelector("graph-graph")
+      .addEventListener("svg-graph-event", (e: CustomEvent) => {
+        if (this.currentTab !== "graph") return;
 
-      if (this.action == "add node") {
-        this.graph = addNode(this.graph, this.newNode);
-        this.updateGraph();
-        this.action = "";
-        document.body.style.cursor = "auto";
-
-        return;
-      }
-      if (e.detail.type == "LINK") {
-        if (this.action == "deleteLink") {
-          (this.graph as unknown as iGraphAfterRender) = deleteLink(
-            this.graph,
-            e.detail.data.source.name,
-            e.detail.data.target.name
-          );
-        }
-        this.action = "";
-        this.updateGraph();
-        document.body.style.cursor = "auto";
-
-        return;
-      }
-      if (e.detail.type == "NODE") {
-        if (this.action == "delete") {
-          (this.graph as unknown as iGraphAfterRender) = deleteNode(
-            this.graph,
-            e.detail.data.name
-          );
+        if (this.action == "add node") {
+          this.graph = addNode(this.graph, this.newNode);
+          this.updateGraph();
           this.action = "";
-          this.updateGraph();
           document.body.style.cursor = "auto";
+
           return;
         }
-        if (this.action == "add link") {
-          this.graph.newLink = e.detail.data.name;
-          this.updateGraph();
-          this.action = "add link 2";
-          this.selectedNode = e.detail.data.name;
-          return;
-        }
-        if (this.action == "add link 2") {
-          if (
-            !containsLink(this.graph, this.selectedNode, e.detail.data.name) &&
-            this.selectedNode !== e.detail.data.name
-          ) {
-            this.graph = addLink(
+        if (e.detail.type == "LINK") {
+          if (this.action == "deleteLink") {
+            (this.graph as unknown as iGraphAfterRender) = deleteLink(
               this.graph,
-              this.selectedNode,
-              e.detail.data.name,
-              this.newLinkWeight
+              e.detail.data.source.name,
+              e.detail.data.target.name
             );
           }
-          this.graph.newLink = "";
-          this.updateGraph();
           this.action = "";
+          this.updateGraph();
           document.body.style.cursor = "auto";
+
           return;
         }
-      }
-    }
+        if (e.detail.type == "NODE") {
+          if (this.action == "delete") {
+            (this.graph as unknown as iGraphAfterRender) = deleteNode(
+              this.graph,
+              e.detail.data.name
+            );
+            this.action = "";
+            this.updateGraph();
+            document.body.style.cursor = "auto";
+            return;
+          }
+          if (this.action == "add link") {
+            this.graph.newLink = e.detail.data.name;
+            this.updateGraph();
+            this.action = "add link 2";
+            this.selectedNode = e.detail.data.name;
+            return;
+          }
+          if (this.action == "add link 2") {
+            if (
+              !containsLink(
+                this.graph,
+                this.selectedNode,
+                e.detail.data.name
+              ) &&
+              this.selectedNode !== e.detail.data.name
+            ) {
+              this.graph = addLink(
+                this.graph,
+                this.selectedNode,
+                e.detail.data.name,
+                this.newLinkWeight
+              );
+            }
+            this.graph.newLink = "";
+            this.updateGraph();
+            this.action = "";
+            document.body.style.cursor = "auto";
+            return;
+          }
+        }
+      });
   }
 
   render() {
