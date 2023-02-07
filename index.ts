@@ -143,7 +143,7 @@ export class GraphViz extends LitElementWw {
             currentTab=${this.currentTab}
             animationStatus=${this.animationStatus}
             .svg=${this.svg}
-          />
+          ></manual-animations>
         </sl-tab-panel>
 
         <sl-tab-panel name="algo">
@@ -151,14 +151,14 @@ export class GraphViz extends LitElementWw {
             currentTab=${this.currentTab}
             animationStatus=${this.animationStatus}
             .graph=${this.graph}
-          />
+          ></algo-selection>
         </sl-tab-panel>
         <sl-tab-panel name="graph">
-          <edit-graph currentTab=${this.currentTab} .graph=${this.graph} />
+          <edit-graph .graph=${this.graph}></edit-graph>
         </sl-tab-panel>
       </sl-tab-group>
 
-      <graph-graph .graph=${this.graph} />
+      <graph-graph .graph=${this.graph}></graph-graph>
     </div>`;
   }
 }

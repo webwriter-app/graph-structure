@@ -1,5 +1,5 @@
 import { LitElementWw } from "@webwriter/lit";
-import { html, PropertyValueMap } from "lit";
+import { css, html, PropertyValueMap } from "lit";
 import { customElement, state } from "lit/decorators.js";
 import { property } from "lit/decorators/property.js";
 import { colorGraphForLinkAnimation } from "../graph/colorGraphForLinkAnimation";
@@ -191,91 +191,120 @@ export class ManualAnimations extends LitElementWw {
     }
   }
 
+  static styles = css`
+    td,
+    th {
+      padding: 4px;
+    }
+
+    td:not(:last-child) {
+      border-right: 1px solid;
+      border-color: lightgray;
+    }
+  `;
+
   render() {
-    return html`
-      <sl-button
-        @click="${() => {
-          this.action = "RECORDING";
-          this.recording = "LINK";
-          document.body.style.cursor = "crosshair";
+    return html`<div style="padding: 4px">
+      <div style="display: flex; gap: 8px">
+        <sl-button
+          style=${"margin-top: auto; margin-bottom: auto;"}
+          @click="${() => {
+            this.action = "RECORDING";
+            this.recording = "LINK";
+            document.body.style.cursor = "crosshair";
 
-          this.recordedAnimation.push({
-            type: "LINK",
-            data: { links: [], colors: [] },
-          });
-          this.currentAnimationBeingEditet = this.recordedAnimation.length - 1;
+            this.recordedAnimation.push({
+              type: "LINK",
+              data: { links: [], colors: [] },
+            });
+            this.currentAnimationBeingEditet =
+              this.recordedAnimation.length - 1;
 
-          colorGraphForLinkAnimation(this.svg, [], []);
-        }}"
-      >
-        Add LINK Animation</sl-button
-      >
-      <sl-button
-        @click="${() => {
-          this.action = "RECORDING";
-          this.recording = "NODE";
-          document.body.style.cursor = "crosshair";
+            colorGraphForLinkAnimation(this.svg, [], []);
+          }}"
+        >
+          Add LINK Animation</sl-button
+        >
+        <sl-button
+          style=${"margin-top: auto; margin-bottom: auto;"}
+          @click="${() => {
+            this.action = "RECORDING";
+            this.recording = "NODE";
+            document.body.style.cursor = "crosshair";
 
-          this.recordedAnimation.push({
-            type: "NODE",
-            data: { names: [], colors: [] },
-          });
-          this.currentAnimationBeingEditet = this.recordedAnimation.length - 1;
-          colorGraphForNodeAnimation(this.svg, [], []);
-        }}"
-        >Add NODE Animation</sl-button
-      ><sl-color-picker
-        value=${this.animationColor}
-        label="Select a color"
-        @sl-change=${(e) => (this.animationColor = e.target.value)}
-      ></sl-color-picker>
+            this.recordedAnimation.push({
+              type: "NODE",
+              data: { names: [], colors: [] },
+            });
+            this.currentAnimationBeingEditet =
+              this.recordedAnimation.length - 1;
+            colorGraphForNodeAnimation(this.svg, [], []);
+          }}"
+          >Add NODE Animation</sl-button
+        >
+        <sl-color-picker
+          value=${this.animationColor}
+          label="Select a color"
+          @sl-change=${(e) => (this.animationColor = e.target.value)}
+        ></sl-color-picker>
+      </div>
 
       <p></p>
-
-      ${this.recordedAnimation.map(
-        (animation, index) => html`<div>
-          <p>
-            <sl-button
-              variant=${this.currentAnimationBeingEditet == index
-                ? "danger"
-                : "default"}
-              @click="${() => {
-                this.animationStatus = "STOP";
-                this.currentAnimationBeingEditet = index;
-                if (animation.type == "NODE") {
-                  this.recording = "NODE";
-                  colorGraphForNodeAnimation(
-                    this.svg,
-                    animation.data.names,
-                    animation.data.colors
-                  );
-                }
-                if (animation.type == "LINK") {
-                  this.recording = "LINK";
-                  colorGraphForLinkAnimation(
-                    this.svg,
-                    animation.data.links,
-                    animation.data.colors
-                  );
-                }
-                document.body.style.cursor = "crosshair";
-              }}"
-              >Select</sl-button
-            >${JSON.stringify(animation)}
-            <sl-button
-              @click="${() => {
-                this.recordedAnimation = [
-                  ...this.recordedAnimation.filter((_, i) => i !== index),
-                ];
-                this.currentAnimationBeingEditet = undefined;
-                this.recording = "";
-                document.body.style.cursor = "auto";
-              }}"
-              >Remove</sl-button
-            >
-          </p>
-        </div>`
-      )}
+      <table>
+        <tr>
+          ${this.recordedAnimation.map(
+            (animation, index) => html`<th>
+              <span>${index + 1}. ${animation.type}</span>
+            </th>`
+          )}
+        </tr>
+        <tr>
+          ${this.recordedAnimation.map(
+            (animation, index) => html`<td>
+              <div style="display: flex">
+                <sl-button
+                  variant=${this.currentAnimationBeingEditet == index
+                    ? "danger"
+                    : "default"}
+                  @click="${() => {
+                    this.animationStatus = "STOP";
+                    this.currentAnimationBeingEditet = index;
+                    if (animation.type == "NODE") {
+                      this.recording = "NODE";
+                      colorGraphForNodeAnimation(
+                        this.svg,
+                        animation.data.names,
+                        animation.data.colors
+                      );
+                    }
+                    if (animation.type == "LINK") {
+                      this.recording = "LINK";
+                      colorGraphForLinkAnimation(
+                        this.svg,
+                        animation.data.links,
+                        animation.data.colors
+                      );
+                    }
+                    document.body.style.cursor = "crosshair";
+                  }}"
+                  ><sl-icon name="pencil"></sl-icon
+                ></sl-button>
+                <sl-button
+                  @click="${() => {
+                    this.recordedAnimation = [
+                      ...this.recordedAnimation.filter((_, i) => i !== index),
+                    ];
+                    this.currentAnimationBeingEditet = undefined;
+                    this.recording = "";
+                    document.body.style.cursor = "auto";
+                  }}"
+                  ><sl-icon name="trash3"></sl-icon
+                ></sl-button>
+              </div>
+            </td>`
+          )}
+        </tr>
+      </table>
 
       <p></p>
       <sl-button
@@ -313,6 +342,6 @@ export class ManualAnimations extends LitElementWw {
         }}"
         >${this.animationStatus == "PAUSE" ? "Play" : "Pause"}</sl-button
       >
-    `;
+    </div>`;
   }
 }
