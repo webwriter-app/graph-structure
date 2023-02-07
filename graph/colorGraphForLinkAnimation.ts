@@ -3,14 +3,14 @@ import * as d3 from "d3";
 export async function colorGraphForLinkAnimation(svg, links, colors) {
   let gnode = svg.selectAll("g");
   let nodes = gnode.selectAll(".node");
-  nodes.style("fill", "red");
+  nodes.style("fill", "white");
   gnode.selectAll(".link").each(function (d, _) {
     if (
       links.every(
         (link) => link.source !== d.source.name || link.target !== d.target.name
       )
     ) {
-      d3.select(this).attr("stroke", "black");
+      d3.select(this).attr("stroke", "lightgray");
     }
   });
   for (let i = 0; i < links.length; i++) {

@@ -26,7 +26,7 @@ export async function animateMultipleLinksBySourceTargetAndColor(
       .transition()
       .duration(translate_speed / 5)
       .attr("stroke-width", function (d) {
-        return 3;
+        return 10;
       });
   }
 

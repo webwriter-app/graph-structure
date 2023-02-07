@@ -13,7 +13,7 @@ import { setNodeSubText } from "./graph/setNodeSubText";
 import { AnimationStatusType, AnimationType, iGraph } from "./types";
 import { delay } from "./utils/sleep";
 
-@customElement("graph-viz")
+@customElement("graph-viz-algo")
 export class GraphViz extends LitElementWw {
   @property() graph: iGraph = {
     newLink: "",
@@ -136,15 +136,7 @@ export class GraphViz extends LitElementWw {
         }}
       >
         <sl-tab slot="nav" panel="algo">Algorithm</sl-tab>
-        <sl-tab slot="nav" panel="manual">Manual Animations</sl-tab>
         <sl-tab slot="nav" panel="graph">Graph</sl-tab>
-        <sl-tab-panel name="manual">
-          <manual-animations
-            currentTab=${this.currentTab}
-            animationStatus=${this.animationStatus}
-            .svg=${this.svg}
-          ></manual-animations>
-        </sl-tab-panel>
 
         <sl-tab-panel name="algo">
           <algo-selection

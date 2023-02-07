@@ -1,14 +1,14 @@
 import * as d3 from "d3";
 
-export const initSize = 26;
-export const emphSize = 28;
+export const initSize = 32;
+export const emphSize = 34;
 
 export function buildChart(svg, width, height, graph) {
   let radius = initSize;
 
   var simulation = d3
     .forceSimulation(graph.nodes)
-    .force("charge", d3.forceManyBody().strength(-250))
+    .force("charge", d3.forceManyBody().strength(-500))
     .force("center", d3.forceCenter(width / 2, height / 2))
     .force(
       "collision",
@@ -66,9 +66,9 @@ export function buildChart(svg, width, height, graph) {
     .attr("class", function (d) {
       return "link " + d.source.name + d.target.name;
     })
-    .attr("stroke", "black")
+    .attr("stroke", "lightgray")
     .attr("stroke-width", function (d) {
-      return 3;
+      return 10;
     })
     .on("mousedown", async (d, i) => dispatchEvent(d, i, "LINK"));
 
@@ -97,7 +97,8 @@ export function buildChart(svg, width, height, graph) {
       return "node " + d.name;
     })
     .attr("r", radius - 0.75)
-    .attr("fill", "red")
+    .attr("fill", "white")
+    .style("stroke", "black")
     .on("mousedown", async (d, i) => dispatchEvent(d, i, "NODE"))
     .call(
       d3
