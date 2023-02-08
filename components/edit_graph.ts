@@ -109,94 +109,110 @@ export class EditGraph extends LitElementWw {
   }
 
   static styles = css`
-    .panel * {
-      display: flex;
-      gap: 10px;
+    td,
+    th {
       padding: 10px;
+    }
+
+    td:not(:last-child),
+    th:not(:last-child) {
+      border-right: 1px solid;
+      border-color: lightgray;
+    }
+    .buttonAndInput {
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
     }
   `;
 
   render() {
-    return html`<sl-tab-group>
-      <sl-tab slot="nav" panel="addnode">Add Node</sl-tab>
-      <sl-tab slot="nav" panel="deletenode">Delete Node</sl-tab>
-      <sl-tab slot="nav" panel="addlink">Add Link</sl-tab>
-      <sl-tab slot="nav" panel="deletelink">Delete Link</sl-tab>
+    return html`
+      <table>
+        <tr>
+          <th>Add Node</th>
+          <th>Add Link</th>
+          <th>Delete Node</th>
+          <th>Delete Link</th>
+        </tr>
+        <tr>
+          <td>
+            <div class="buttonAndInput">
+              <sl-input
+                @input="${(e) => (this.newNode = e.target.value)}"
+                label="Name"
+              ></sl-input>
+              <sl-tooltip
+                content='Enter a name click "Add Node" and then click the graph to add a
+          node'
+              >
+                <sl-button
+                  @click="${() => {
+                    this.action = "add node";
+                    document.body.style.cursor = "crosshair";
+                  }}"
+                  >Add Node</sl-button
+                ></sl-tooltip
+              >
+            </div>
+          </td>
 
-      <sl-tab-panel class="panel" name="addnode">
-        <span
-          >Enter a name click "Add Node" and then click the graph to add a
-          node.</span
-        >
-        <div class="buttonAndInput">
-          <sl-input
-            @input="${(e) => (this.newNode = e.target.value)}"
-            label="Name"
-          ></sl-input>
-          <sl-button
-            style=${"align-items: flex-end"}
-            @click="${() => {
-              this.action = "add node";
-              document.body.style.cursor = "crosshair";
-            }}"
-            >Add Node</sl-button
-          >
-        </div>
-      </sl-tab-panel>
-      <sl-tab-panel class="panel" name="deletenode">
-        <span
-          >Click "Delete Node" and then the Node you want to delete to delete a
-          Node.</span
-        >
-        <div class="buttonAndInput">
-          <sl-button
-            @click="${() => {
-              document.body.style.cursor = "crosshair";
+          <td>
+            <div class="buttonAndInput">
+              <sl-input
+                @input="${(e) => (this.newLinkWeight = e.target.value)}"
+                type="number"
+                label="Weight"
+              ></sl-input>
+              <sl-tooltip
+                content='Enter a weight click "Add Link" and then first click the source and
+          then the target of the link to add a link'
+              >
+                <sl-button
+                  style=${"align-items: flex-end"}
+                  @click="${() => {
+                    this.action = "add link";
+                    document.body.style.cursor = "crosshair";
+                  }}"
+                  >Add Link</sl-button
+                ></sl-tooltip
+              >
+            </div>
+          </td>
+          <td>
+            <sl-tooltip
+              content='Click "Delete Node" and then the Node you want to delete to delete a
+          Node'
+            >
+              <sl-button
+                @click="${() => {
+                  document.body.style.cursor = "crosshair";
 
-              this.action = "delete";
-            }}"
-            >Delete Node</sl-button
-          >
-        </div>
-      </sl-tab-panel>
-      <sl-tab-panel class="panel" name="addlink">
-        <span
-          >Enter a weight click "Add Link" and then first click the source and
-          then the target of the link to add a link.</span
-        >
-        <div class="buttonAndInput">
-          <sl-input
-            @input="${(e) => (this.newLinkWeight = e.target.value)}"
-            type="number"
-            label="Weight"
-          ></sl-input>
+                  this.action = "delete";
+                }}"
+                >Delete Node</sl-button
+              ></sl-tooltip
+            >
+          </td>
+          <td>
+            <div class="buttonAndInput">
+              <sl-tooltip
+                content='Click "Delete Link" and then the Link you want to delete to delete a
+          Link'
+              >
+                <sl-button
+                  @click="${() => {
+                    document.body.style.cursor = "crosshair";
 
-          <sl-button
-            style=${"align-items: flex-end"}
-            @click="${() => {
-              this.action = "add link";
-              document.body.style.cursor = "crosshair";
-            }}"
-            >Add Link</sl-button
-          >
-        </div>
-      </sl-tab-panel>
-      <sl-tab-panel class="panel" name="deletelink">
-        <span
-          >Click "Delete Link" and then the Link you want to delete to delete a
-          Link.</span
-        >
-        <div class="buttonAndInput">
-          <sl-button
-            @click="${() => {
-              document.body.style.cursor = "crosshair";
-
-              this.action = "deleteLink";
-            }}"
-            >Delete Link</sl-button
-          >
-        </div>
-      </sl-tab-panel>
-    </sl-tab-group> `;
+                    this.action = "deleteLink";
+                  }}"
+                  >Delete Link</sl-button
+                ></sl-tooltip
+              >
+            </div>
+          </td>
+        </tr>
+      </table>
+    `;
   }
 }
