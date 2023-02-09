@@ -38,9 +38,10 @@ export class GraphViz extends LitElementWw {
       { source: "Dawg", target: "Ethan", weight: 1 },
     ],
   };
+  @property() animation: AnimationType = [];
+  @property({ type: Boolean }) editable: boolean = false;
 
   @state() private svg: any = null;
-  @state() private animation: AnimationType = [];
   @state() private animationStatus: AnimationStatusType = "STOP";
   @state() private animationPosition: number = 0;
   @state() private currentTab: string = "manual";
@@ -127,28 +128,38 @@ export class GraphViz extends LitElementWw {
 
   render() {
     return html`<div>
-      <sl-tab-group
-        @sl-tab-show=${(e) => {
-          this.animationStatus = "STOP";
-          this.resetGraph();
-          this.currentTab = e.detail.name;
-          document.body.style.cursor = "auto";
-        }}
-      >
-        <sl-tab slot="nav" panel="manual">Manual Animations</sl-tab>
-        <sl-tab slot="nav" panel="graph">Graph</sl-tab>
-        <sl-tab-panel name="manual">
-          <manual-animations
+      ${this.editable
+        ? html`<sl-tab-group
+            @sl-tab-show=${(e) => {
+              this.animationStatus = "STOP";
+              this.resetGraph();
+              this.currentTab = e.detail.name;
+              document.body.style.cursor = "auto";
+            }}
+          >
+            <sl-tab slot="nav" panel="manual">Manual Animations</sl-tab>
+            <sl-tab slot="nav" panel="graph">Graph</sl-tab>
+            <sl-tab-panel name="manual">
+              <manual-animations
+                ?editable=${this.editable}
+                currentTab=${this.currentTab}
+                animationStatus=${this.animationStatus}
+                .svg=${this.svg}
+              ></manual-animations>
+            </sl-tab-panel>
+            <sl-tab-panel name="graph">
+              <edit-graph .graph=${this.graph}></edit-graph>
+            </sl-tab-panel>
+          </sl-tab-group>`
+        : null}
+      ${!this.editable
+        ? html`<manual-animations
+            ?editable=${this.editable}
             currentTab=${this.currentTab}
             animationStatus=${this.animationStatus}
             .svg=${this.svg}
-          ></manual-animations>
-        </sl-tab-panel>
-
-        <sl-tab-panel name="graph">
-          <edit-graph .graph=${this.graph}></edit-graph>
-        </sl-tab-panel>
-      </sl-tab-group>
+          ></manual-animations>`
+        : null}
 
       <graph-graph .graph=${this.graph}></graph-graph>
     </div>`;

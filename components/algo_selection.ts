@@ -12,6 +12,7 @@ import { AnimationStatusType, iGraph } from "../types";
 import {
   dispatchAnimationEvent,
   dispatchGraphReset,
+  setAlgoEvent,
   setAnimation,
   setAnimationPosition,
   setAnimationStatus,
@@ -30,19 +31,21 @@ export class AlgoSelection extends LitElementWw {
 
   @state() private action: string = "";
   @state() private target: string = "";
-  @state() private algorithm:
+  @property({ type: String }) algorithm:
     | "DFS"
     | "SPANTREE"
     | "DIJKSTRA"
     | "CYCLE"
     | "BFS"
     | "COLORING" = "SPANTREE";
+  @property({ type: Boolean }) editable: boolean = false;
 
   protected firstUpdated(
     _changedProperties: PropertyValueMap<any> | Map<PropertyKey, unknown>
   ): void {
     document
       .querySelector("#main")
+      .shadowRoot.querySelector("#submain")
       .shadowRoot.querySelector("graph-graph")
       .addEventListener("svg-graph-event", (e: CustomEvent) => {
         if (e.detail.type == "NODE") {
@@ -69,21 +72,23 @@ export class AlgoSelection extends LitElementWw {
 
   render() {
     return html`
-      <sl-select
-        value=${this.algorithm}
-        @sl-change=${(e) => (this.algorithm = e.target.value)}
-        label="Select Algorithm"
-      >
-        <sl-menu-item value="SPANTREE">Span Tree</sl-menu-item>
-        <sl-menu-item value="COLORING"
-          >Graph Coloring (Brute Force)</sl-menu-item
-        >
-        <sl-menu-item value="CYCLE">Cycle Detection</sl-menu-item>
-        <sl-menu-item value="BFS">BFS</sl-menu-item>
-        <sl-menu-item value="DFS">DFS</sl-menu-item>
-        <sl-menu-item value="DIJKSTRA">DIJKSTRA</sl-menu-item>
-      </sl-select>
-      <p></p>
+      ${this.editable
+        ? html`<sl-select
+              value=${this.algorithm}
+              @sl-change=${(e) => setAlgoEvent(this, e.target.value)}
+              label="Select Algorithm"
+            >
+              <sl-menu-item value="SPANTREE">Span Tree</sl-menu-item>
+              <sl-menu-item value="COLORING"
+                >Graph Coloring (Brute Force)</sl-menu-item
+              >
+              <sl-menu-item value="CYCLE">Cycle Detection</sl-menu-item>
+              <sl-menu-item value="BFS">BFS</sl-menu-item>
+              <sl-menu-item value="DFS">DFS</sl-menu-item>
+              <sl-menu-item value="DIJKSTRA">DIJKSTRA</sl-menu-item>
+            </sl-select>
+            <p></p>`
+        : null}
       ${this.algorithm == "DFS" || this.algorithm == "BFS"
         ? html`<sl-input
               @input="${(e) => (this.target = e.target.value)}"

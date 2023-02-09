@@ -40,6 +40,7 @@ export class EditGraph extends LitElementWw {
   ): void {
     document
       .querySelector("#main")
+      .shadowRoot.querySelector("#submain")
       .shadowRoot.querySelector("graph-graph")
       .addEventListener("svg-graph-event", (e: CustomEvent) => {
         if (this.action == "add node") {

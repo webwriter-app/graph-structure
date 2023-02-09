@@ -38,6 +38,14 @@ export class GraphViz extends LitElementWw {
       { source: "Dawg", target: "Ethan", weight: 1 },
     ],
   };
+  @property({ type: Boolean }) editable: boolean = false;
+  @property({ type: String }) algorithm:
+    | "DFS"
+    | "SPANTREE"
+    | "DIJKSTRA"
+    | "CYCLE"
+    | "BFS"
+    | "COLORING" = "SPANTREE";
 
   @state() private svg: any = null;
   @state() private animation: AnimationType = [];
@@ -82,6 +90,10 @@ export class GraphViz extends LitElementWw {
 
   constructor() {
     super();
+
+    this.addEventListener("algo-update", (e: CustomEvent) => {
+      this.algorithm = e.detail;
+    });
 
     this.addEventListener("svg-update", (e: CustomEvent) => {
       this.svg = e.detail;
@@ -135,11 +147,13 @@ export class GraphViz extends LitElementWw {
           document.body.style.cursor = "auto";
         }}
       >
-        <sl-tab slot="nav" panel="algo">Algorithm</sl-tab>
+        <sl-tab slot="nav" panel="algo">Execute</sl-tab>
         <sl-tab slot="nav" panel="graph">Graph</sl-tab>
 
         <sl-tab-panel name="algo">
           <algo-selection
+            ?editable=${this.editable}
+            algorithm=${this.algorithm}
             currentTab=${this.currentTab}
             animationStatus=${this.animationStatus}
             .graph=${this.graph}

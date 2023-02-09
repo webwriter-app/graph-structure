@@ -19,6 +19,16 @@ export function dispatchAnimationEvent(emitter) {
   );
 }
 
+export function setAlgoEvent(emitter, algo: string) {
+  emitter.dispatchEvent(
+    new CustomEvent("algo-update", {
+      bubbles: true,
+      composed: true,
+      detail: algo,
+    })
+  );
+}
+
 export function dispatchGraphReset(emitter) {
   emitter.dispatchEvent(
     new CustomEvent("reset-graph", {
