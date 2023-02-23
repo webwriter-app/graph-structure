@@ -1,5 +1,5 @@
 import { LitElementWw } from "@webwriter/lit";
-import { css, html } from "lit";
+import { css, html, PropertyValueMap } from "lit";
 import { customElement, state } from "lit/decorators.js";
 import { property } from "lit/decorators/property.js";
 import "./components/algo_selection";
@@ -109,6 +109,14 @@ export class GraphViz extends LitElementWw {
     this.addEventListener("reset-graph", this.resetGraph);
   }
 
+  protected updated(
+    _changedProperties: PropertyValueMap<any> | Map<PropertyKey, unknown>
+  ): void {
+    if (_changedProperties.has("editable")) {
+      (this.shadowRoot.querySelector("sl-tab-group") as any).show("manual");
+    }
+  }
+
   resetGraph() {
     const temp = { ...this.graph };
     this.graph = undefined;
@@ -128,38 +136,32 @@ export class GraphViz extends LitElementWw {
 
   render() {
     return html`<div>
-      ${this.editable
-        ? html`<sl-tab-group
-            @sl-tab-show=${(e) => {
-              this.animationStatus = "STOP";
-              this.resetGraph();
-              this.currentTab = e.detail.name;
-              document.body.style.cursor = "auto";
-            }}
-          >
-            <sl-tab slot="nav" panel="manual">Manual Animations</sl-tab>
-            <sl-tab slot="nav" panel="graph">Graph</sl-tab>
-            <sl-tab-panel name="manual">
-              <manual-animations
-                ?editable=${this.editable}
-                currentTab=${this.currentTab}
-                animationStatus=${this.animationStatus}
-                .svg=${this.svg}
-              ></manual-animations>
-            </sl-tab-panel>
-            <sl-tab-panel name="graph">
-              <edit-graph .graph=${this.graph}></edit-graph>
-            </sl-tab-panel>
-          </sl-tab-group>`
-        : null}
-      ${!this.editable
-        ? html`<manual-animations
+      <sl-tab-group
+        @sl-tab-show=${(e) => {
+          this.animationStatus = "STOP";
+          this.resetGraph();
+          this.currentTab = e.detail.name;
+          document.body.style.cursor = "auto";
+        }}
+      >
+        <sl-tab slot="nav" panel="manual">Animation</sl-tab>
+        ${this.editable
+          ? html`<sl-tab slot="nav" panel="graph">Graph</sl-tab>`
+          : null}
+        <sl-tab-panel name="manual">
+          <manual-animations
             ?editable=${this.editable}
             currentTab=${this.currentTab}
             animationStatus=${this.animationStatus}
             .svg=${this.svg}
-          ></manual-animations>`
-        : null}
+          ></manual-animations>
+        </sl-tab-panel>
+        ${this.editable
+          ? html`<sl-tab-panel name="graph">
+              <edit-graph .graph=${this.graph}></edit-graph>
+            </sl-tab-panel>`
+          : null}
+      </sl-tab-group>
 
       <graph-graph .graph=${this.graph}></graph-graph>
     </div>`;
