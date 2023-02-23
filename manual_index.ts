@@ -45,6 +45,7 @@ export class GraphViz extends LitElementWw {
   @state() private animationStatus: AnimationStatusType = "STOP";
   @state() private animationPosition: number = 0;
   @state() private currentTab: string = "manual";
+  @state() private event: CustomEvent = null;
 
   async animateGraph() {
     if (this.animationStatus === "RUN") {
@@ -84,6 +85,10 @@ export class GraphViz extends LitElementWw {
   constructor() {
     super();
 
+    addEventListener("svg-graph-event", (e: CustomEvent) => {
+      this.event = e;
+    });
+
     this.addEventListener("svg-update", (e: CustomEvent) => {
       this.svg = e.detail;
     });
@@ -113,7 +118,8 @@ export class GraphViz extends LitElementWw {
     _changedProperties: PropertyValueMap<any> | Map<PropertyKey, unknown>
   ): void {
     if (_changedProperties.has("editable")) {
-      (this.shadowRoot.querySelector("sl-tab-group") as any).show("manual");
+      if ((this.shadowRoot.querySelector("sl-tab-group") as any).show)
+        (this.shadowRoot.querySelector("sl-tab-group") as any).show("manual");
     }
   }
 
@@ -150,6 +156,7 @@ export class GraphViz extends LitElementWw {
           : null}
         <sl-tab-panel name="manual">
           <manual-animations
+            .event=${this.event}
             ?editable=${this.editable}
             currentTab=${this.currentTab}
             animationStatus=${this.animationStatus}
@@ -158,7 +165,10 @@ export class GraphViz extends LitElementWw {
         </sl-tab-panel>
         ${this.editable
           ? html`<sl-tab-panel name="graph">
-              <edit-graph .graph=${this.graph}></edit-graph>
+              <edit-graph
+                .event=${this.event}
+                .graph=${this.graph}
+              ></edit-graph>
             </sl-tab-panel>`
           : null}
       </sl-tab-group>

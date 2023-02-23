@@ -52,6 +52,7 @@ export class GraphViz extends LitElementWw {
   @state() private animationStatus: AnimationStatusType = "STOP";
   @state() private animationPosition: number = 0;
   @state() private currentTab: string = "algo";
+  @state() private event: CustomEvent = null;
 
   async animateGraph() {
     if (this.animationStatus === "RUN") {
@@ -90,6 +91,14 @@ export class GraphViz extends LitElementWw {
 
   constructor() {
     super();
+
+    addEventListener("svg-graph-event", (e: CustomEvent) => {
+      this.event = e;
+    });
+
+    this.addEventListener("algo-update", (e: CustomEvent) => {
+      this.algorithm = e.detail;
+    });
 
     this.addEventListener("algo-update", (e: CustomEvent) => {
       this.algorithm = e.detail;
@@ -152,6 +161,7 @@ export class GraphViz extends LitElementWw {
 
         <sl-tab-panel name="algo">
           <algo-selection
+            .event=${this.event}
             ?editable=${this.editable}
             algorithm=${this.algorithm}
             currentTab=${this.currentTab}
@@ -160,7 +170,7 @@ export class GraphViz extends LitElementWw {
           ></algo-selection>
         </sl-tab-panel>
         <sl-tab-panel name="graph">
-          <edit-graph .graph=${this.graph}></edit-graph>
+          <edit-graph .event=${this.event} .graph=${this.graph}></edit-graph>
         </sl-tab-panel>
       </sl-tab-group>
 
