@@ -13,12 +13,18 @@
     "typescript": "^4.8.4",
     "vite": "^3.1.6"
   },
-  "name": "graph-viz",
-  "version": "0.1.0",
-  "description": "",
+  "name": "ww-manualgraphviz",
+  "version": "0.4.0",
   "keywords": [
-    "webwriter"
+    "webwriter",
+    "webwriter-widget"
   ],
   "author": "Ferdinand Baumgarten <ferdinand.baumgarten@rwth-aachen.de>",
-  "license": "MIT"
+  "license": "MIT",
+  "main": "index.ts",
+  "repository": {
+    "type": "git",
+    "url": "git@git.rwth-aachen.de:learntech-lufgi9/bama/webwriter/ww-graph-visualization.git"
+  },
+  "description": ""
 }
