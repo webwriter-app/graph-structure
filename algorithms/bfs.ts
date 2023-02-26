@@ -1,4 +1,4 @@
-import { AnimationType } from "iGraph";
+import { AnimationType } from "../types";
 
 export function bfs(start, graph, target) {
   let animation: AnimationType = [];

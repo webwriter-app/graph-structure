@@ -4,7 +4,7 @@ import { customElement, state } from "lit/decorators.js";
 import { property } from "lit/decorators/property.js";
 import { colorGraphForLinkAnimation } from "../graph/colorGraphForLinkAnimation";
 import { colorGraphForNodeAnimation } from "../graph/colorGraphForNodeAnimation";
-import { AnimationStatusType } from "../types";
+import { AnimationStatusType, AnimationType } from "../types";
 import {
   dispatchAnimationEvent,
   dispatchGraphReset,
@@ -13,11 +13,6 @@ import {
   setAnimationStatus,
 } from "../utils/events";
 import { delay } from "../utils/sleep";
-
-export type AnimationType = {
-  type: "SetNodeSubText" | "RESET" | "NODE" | "LINK";
-  data: any;
-}[];
 
 @customElement("manual-animations")
 export class ManualAnimations extends LitElementWw {

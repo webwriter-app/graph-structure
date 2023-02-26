@@ -14,8 +14,7 @@ export async function animateMultipleNodesByNameAndColor(svg, names, colors) {
       .transition()
       .duration(translate_speed / 5)
       .attr("r", initSize)
-      .style("fill", colors[i])
-      .style("stroke-width", "0");
+      .style("fill", colors[i]);
   }
 
   await delay(translate_speed);

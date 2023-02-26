@@ -1,7 +1,15 @@
-import { AnimationType } from "iGraph";
+import { AnimationType } from "../types";
 
 export function coloring(graph) {
-  let animation: AnimationType = [];
+  let animation: AnimationType = [
+    {
+      type: "NODE",
+      data: {
+        names: graph.nodes.map((n) => n.name),
+        colors: graph.nodes.map((_) => "red"),
+      },
+    },
+  ];
 
   let colors = [];
 
