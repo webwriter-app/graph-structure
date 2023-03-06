@@ -3,7 +3,6 @@ import { AnimationType } from "../types";
 export function spanTree(graph) {
   let animation: AnimationType = [];
 
-  let debug = 0;
   let done = false;
 
   let edgesOfSpan = [];
@@ -14,7 +13,7 @@ export function spanTree(graph) {
     connectetComponents.push([node.name]);
   }
 
-  while (!done && debug < 6) {
+  while (!done) {
     let cheapestEdges = connectetComponents.map((x) => null);
     for (let edge of graph.links) {
       if (

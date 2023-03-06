@@ -40,7 +40,7 @@ export default class GraphViz extends LitElementWw {
   };
   @property({ type: Object, attribute: true, reflect: true })
   animation: AnimationType = [];
-  @property({ type: Boolean }) editable: boolean = true;
+  @property({ type: Boolean }) editable: boolean = false;
 
   @state() private svg: any = null;
   @state() private animationStatus: AnimationStatusType = "STOP";
@@ -110,6 +110,7 @@ export default class GraphViz extends LitElementWw {
 
     this.addEventListener("animation-update", (e: CustomEvent) => {
       this.animation = e.detail;
+      console.log(this.animation);
     });
 
     this.addEventListener("reset-graph", this.resetGraph);
@@ -157,6 +158,7 @@ export default class GraphViz extends LitElementWw {
           : null}
         <sl-tab-panel name="manual">
           <manual-animations
+            .oldRecordedAnimation=${this.animation}
             .event=${this.event}
             ?editable=${this.editable}
             currentTab=${this.currentTab}

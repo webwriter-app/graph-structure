@@ -21,12 +21,18 @@ export class ManualAnimations extends LitElementWw {
   @property({ type: String }) currentTab: string = "algo";
   @property({ type: String }) animationStatus: AnimationStatusType = "STOP";
   @property({ type: Object }) event: CustomEvent = null;
-
-  @state() action: string = "";
+  @property() oldRecordedAnimation: AnimationType = [];
+  @state() action: string = "RECORDING";
   @state() recordedAnimation: AnimationType = [];
   @state() animationColor: string = "#4a90e2";
   @state() recording: "NODE" | "LINK" | "" = "";
   @state() currentAnimationBeingEditet: undefined | number = undefined;
+
+  protected firstUpdated(
+    _changedProperties: PropertyValueMap<any> | Map<PropertyKey, unknown>
+  ): void {
+    this.recordedAnimation = [...this.oldRecordedAnimation];
+  }
 
   protected updated(
     _changedProperties: PropertyValueMap<any> | Map<PropertyKey, unknown>

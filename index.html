@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Testing graph-viz</title>
     <script src="algo_index.ts" type="module"></script>
+    <script src="manual_index.ts" type="module"></script>
     <script src="https://cdn.tailwindcss.com"></script>
 
     <link
@@ -19,44 +20,29 @@
   <body>
     <div class="flex justify-center min-h-screen p-10 text-black bg-slate-100 ">
         <div class="flex flex-col max-w-3xl space-y-3">
-          <p class="text-3xl">The Dijkstra Algorithm</p>
-          <p>
-            Der Dijkstra-Algorithmus ist ein Algorithmus zur Bestimmung des
-            kürzesten Pfades von einem Startknoten zu allen anderen Knoten in
-            einem gewichteten Graphen. Er arbeitet dabei mit einer
-            Prioritätswarteschlange, in der die Knoten nach ihrer Entfernung zum
-            Startknoten sortiert sind. Der Algorithmus besucht jeden Knoten nur
-            einmal und aktualisiert dabei laufend die Entfernungen zu den
-            Nachbarknoten.
-          </p>
-          <p>Hier sind die Schritte des Dijkstra-Algorithmus:</p>
-          <ol class="pl-10 space-y-3 list-decimal">
-            <li>
-              Initialisierung: Setze die Entfernung zum Startknoten auf 0 und
-              die Entfernung zu allen anderen Knoten auf unendlich. Füge den
-              Startknoten zur Prioritätswarteschlange hinzu.
-            </li>
-            <li>
-              Solange die Prioritätswarteschlange nicht leer ist, nimm den
-              Knoten mit der kürzesten Entfernung aus der
-              Prioritätswarteschlange.
-            </li>
-            <li>
-              Für jeden Nachbarknoten des aktuellen Knotens, berechne die
-              Entfernung zum Startknoten durch Addition der Entfernung vom
-              aktuellen Knoten zum Nachbarn und der Entfernung vom Startknoten
-              zum aktuellen Knoten. Falls diese Entfernung kürzer ist als die
-              aktuelle Entfernung zum Nachbarn, aktualisiere die Entfernung und
-              füge den Nachbarn zur Prioritätswarteschlange hinzu.
-            </li>
-            <li>Wiederhole Schritt 2 und 3, bis alle Knoten besucht wurden.</li>
-          </ol>
-          <p>
-            Am Ende des Algorithmus enthält jeder Knoten die Entfernung zum
-            Startknoten und der kürzeste Pfad kann durch Rückverfolgung dieser
-            Entfernungen ermittelt werden.
-          </p>
-          <ww-algographviz graph='{"newLink":"","nodes":[{"name":"Chen"},{"name":"Dawg"},{"name":"Ethan"},{"name":"Frank"},{"name":"Hanes"}],"links":[{"source":"Dawg","target":"Chen","weight":1},{"source":"Dawg","target":"Frank","weight":1},{"source":"Chen","target":"Frank","weight":4},{"source":"Hanes","target":"Frank","weight":4},{"source":"Dawg","target":"Ethan","weight":1}]}' algorithm="DIJKSTRA"></ww-algographviz>
+          <p class="text-3xl">The Kruskal Algorithm</p>
+
+          <p>Der Kruskal-Algorithmus ist ein Algorithmus aus der Graphentheorie, der dazu dient, den minimalen Spannbaum (MST) eines ungerichteten, gewichteten Graphen zu finden. Ein Spannbaum eines Graphen ist ein Teilgraph, der alle Knoten des Graphen enthält und keine Zyklen aufweist. Ein gewichteter Graph ist ein Graph, bei dem jeder Kante ein Gewicht (eine Kostenfunktion) zugeordnet ist.</p>
+
+          <p>Der Kruskal-Algorithmus arbeitet nach dem Greedy-Prinzip, d.h. er trifft bei jeder Schleife die jeweils beste Entscheidung und hofft darauf, dass diese Entscheidung in der Gesamtbetrachtung den bestmöglichen Spannbaum liefert. Der Algorithmus läuft wie folgt ab:</p>
           
+          <ol class="pl-10 space-y-3 list-decimal">
+            <li> Sortiere alle Kanten des Graphen nach Gewicht.</li>
+                <li>Erstelle einen leeren Teilgraphen als MST.</li>
+                    <li>Gehe alle Kanten in der sortierten Reihenfolge durch.</li>
+                        <li>Füge die Kante zum MST hinzu, wenn sie keinen Zyklus erzeugt.</li></ol>
+                            <p> Die Idee hinter dem Algorithmus ist, dass man immer die günstigste Kante nimmt, die noch nicht zu einem Zyklus im MST führt. Wenn man so vorgeht, wird man immer den günstigsten Spannbaum erhalten.</p>
+          
+          
+
+
+        
+          <ww-algographviz graph='{"newLink":"","nodes":[{"name":"Chen"},{"name":"Ina"},{"name":"Dawg"},{"name":"Ethan"},{"name":"Frank"},{"name":"Hanes"}],"links":[{"source":"Dawg","target":"Chen","weight":1},{"source":"Dawg","target":"Frank","weight":1},{"source":"Chen","target":"Frank","weight":4},{"source":"Hanes","target":"Frank","weight":4},{"source":"Dawg","target":"Ethan","weight":1},{"source":"Ina","target":"Hanes","weight":1}]}' ></ww-algographviz>
+
+          <p>Um zu verhindern, dass der Algorithmus Zyklen erzeugt, kann man die Knoten in zusammenhängende Komponenten einteilen, basierend auf den bereits zum Spannbaum hinzugefügten Kanten.  Am Anfang sind alle demnach alle Knoten in verschieden Komponenten. Nach dem hinzufügen einer Kante werden die beiden verbundenen Komponenten zu einer. Wenn man jetzt nur Kanten hinzufügt, die zwei Komponenten verbindet kann man nie einen Kreis erzeugen. 
+          </p>
+          <p>In folgender Animation siehst du die zusammenhängenden Komponenten jeweils in unterschiedlichen Farben.</p>
+
+          <ww-manualgraphviz animation='[{"type":"NODE","data":{"names":["Ethan","Chen","Frank","Hanes","Ina","Dawg"],"colors":["#4a90e2","#e26a4a","#e24ad5","#dfe24a","#50e3c2","#57e24a"]}},{"type":"LINK","data":{"links":[{"source":"Dawg","target":"Chen"}],"colors":["#7ed321"]}},{"type":"NODE","data":{"names":["Chen"],"colors":["#57e24a"]}},{"type":"LINK","data":{"links":[{"source":"Ina","target":"Hanes"}],"colors":["#7ed321"]}},{"type":"NODE","data":{"names":["Hanes"],"colors":["#50e3c2"]}},{"type":"LINK","data":{"links":[{"source":"Dawg","target":"Ethan"}],"colors":["#7ed321"]}},{"type":"NODE","data":{"names":["Ethan"],"colors":["#57e24a"]}},{"type":"LINK","data":{"links":[{"source":"Dawg","target":"Frank"}],"colors":["#7ed321"]}},{"type":"NODE","data":{"names":["Frank"],"colors":["#57e24a"]}},{"type":"LINK","data":{"links":[{"source":"Hanes","target":"Frank"}],"colors":["#7ed321"]}},{"type":"NODE","data":{"names":["Hanes","Ina"],"colors":["#57e24a","#57e24a"]}}]' graph='{"newLink":"","nodes":[{"name":"Chen"},{"name":"Ina"},{"name":"Dawg"},{"name":"Ethan"},{"name":"Frank"},{"name":"Hanes"}],"links":[{"source":"Dawg","target":"Chen","weight":1},{"source":"Dawg","target":"Frank","weight":1},{"source":"Chen","target":"Frank","weight":4},{"source":"Hanes","target":"Frank","weight":4},{"source":"Dawg","target":"Ethan","weight":1},{"source":"Ina","target":"Hanes","weight":1}]}' ></ww-manualgraphviz>
   </body>
 </html>
