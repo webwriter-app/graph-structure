@@ -13,9 +13,9 @@ import { setNodeSubText } from "./graph/setNodeSubText";
 import { AnimationStatusType, AnimationType, iGraph } from "./types";
 import { delay } from "./utils/sleep";
 
-@customElement("graph-viz-algo")
-export class GraphViz extends LitElementWw {
-  @property() graph: iGraph = {
+@customElement("ww-algographviz")
+export default class GraphViz extends LitElementWw {
+  @property({ type: Object }) graph: iGraph = {
     newLink: "",
     nodes: [
       { name: "Ina" },
@@ -38,8 +38,10 @@ export class GraphViz extends LitElementWw {
       { source: "Dawg", target: "Ethan", weight: 1 },
     ],
   };
+
   @property({ type: Boolean }) editable: boolean = false;
-  @property({ type: String }) algorithm:
+  @property({ type: String, attribute: true, reflect: true })
+  private algorithm:
     | "DFS"
     | "SPANTREE"
     | "DIJKSTRA"
@@ -98,6 +100,7 @@ export class GraphViz extends LitElementWw {
 
     this.addEventListener("algo-update", (e: CustomEvent) => {
       this.algorithm = e.detail;
+      console.log(this.algorithm);
     });
 
     this.addEventListener("algo-update", (e: CustomEvent) => {

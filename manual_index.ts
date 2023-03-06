@@ -13,9 +13,9 @@ import { setNodeSubText } from "./graph/setNodeSubText";
 import { AnimationStatusType, AnimationType, iGraph } from "./types";
 import { delay } from "./utils/sleep";
 
-@customElement("graph-viz-manual")
-export class GraphViz extends LitElementWw {
-  @property() graph: iGraph = {
+@customElement("ww-manualgraphviz")
+export default class GraphViz extends LitElementWw {
+  @property({ type: Object, attribute: true, reflect: true }) graph: iGraph = {
     newLink: "",
     nodes: [
       { name: "Ina" },
@@ -38,8 +38,9 @@ export class GraphViz extends LitElementWw {
       { source: "Dawg", target: "Ethan", weight: 1 },
     ],
   };
-  @property() animation: AnimationType = [];
-  @property({ type: Boolean }) editable: boolean = false;
+  @property({ type: Object, attribute: true, reflect: true })
+  animation: AnimationType = [];
+  @property({ type: Boolean }) editable: boolean = true;
 
   @state() private svg: any = null;
   @state() private animationStatus: AnimationStatusType = "STOP";
