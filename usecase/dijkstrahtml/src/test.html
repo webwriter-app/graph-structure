@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link href="../dist/output.css" rel="stylesheet" />
+    <script src="./testeleemt.js" type="module"></script>
+
+  </head>
+
+  <div class="bg-[#1A1B1E] p-10 justify-center flex text-white  min-h-screen  ">
+    <simple-greeting ></simple-greeting>
+    <div class="flex flex-col max-w-2xl space-y-3">
+      <p class="text-3xl">The Dijkstra Algorithm</p>
+      <p>
+        Der Dijkstra-Algorithmus ist ein Algorithmus zur Bestimmung des
+        kürzesten Pfades von einem Startknoten zu allen anderen Knoten in
+        einem gewichteten Graphen. Er arbeitet dabei mit einer
+        Prioritätswarteschlange, in der die Knoten nach ihrer Entfernung zum
+        Startknoten sortiert sind. Der Algorithmus besucht jeden Knoten nur
+        einmal und aktualisiert dabei laufend die Entfernungen zu den
+        Nachbarknoten.
+      </p>
+      <p>Hier sind die Schritte des Dijkstra-Algorithmus:</p>
+      <ol class="pl-10 space-y-3 list-decimal">
+        <li>
+          Initialisierung: Setze die Entfernung zum Startknoten auf 0 und
+          die Entfernung zu allen anderen Knoten auf unendlich. Füge den
+          Startknoten zur Prioritätswarteschlange hinzu.
+        </li>
+        <li>
+          Solange die Prioritätswarteschlange nicht leer ist, nimm den
+          Knoten mit der kürzesten Entfernung aus der
+          Prioritätswarteschlange.
+        </li>
+        <li>
+          Für jeden Nachbarknoten des aktuellen Knotens, berechne die
+          Entfernung zum Startknoten durch Addition der Entfernung vom
+          aktuellen Knoten zum Nachbarn und der Entfernung vom Startknoten
+          zum aktuellen Knoten. Falls diese Entfernung kürzer ist als die
+          aktuelle Entfernung zum Nachbarn, aktualisiere die Entfernung und
+          füge den Nachbarn zur Prioritätswarteschlange hinzu.
+        </li>
+        <li>Wiederhole Schritt 2 und 3, bis alle Knoten besucht wurden.</li>
+      </ol>
+      <p>
+        Am Ende des Algorithmus enthält jeder Knoten die Entfernung zum
+        Startknoten und der kürzeste Pfad kann durch Rückverfolgung dieser
+        Entfernungen ermittelt werden.
+      </p>
+      <ww-algographviz></ww-algographviz>
+      <p class="text-2xl">Laufzeitanalyse</p>
+    </div>
+  </div>
+</MantineProvider>
+</html>
