@@ -47,7 +47,7 @@ export default class GraphViz extends LitElementWw {
     | "DIJKSTRA"
     | "CYCLE"
     | "BFS"
-    | "COLORING" = "SPANTREE";
+    | "COLORING" = "COLORING";
 
   @state() private svg: any = null;
   @state() private animation: AnimationType = [];
@@ -177,7 +177,7 @@ export default class GraphViz extends LitElementWw {
         </sl-tab-panel>
       </sl-tab-group>
 
-      <graph-graph .graph=${this.graph}></graph-graph>
+      <display-graph .graph=${this.graph}></display-graph>
     </div>`;
   }
 }

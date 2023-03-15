@@ -7,7 +7,7 @@ import { iGraph } from "../types";
 import { select } from "d3-selection";
 import { buildChart } from "../graph/buildGraph";
 
-@customElement("graph-graph")
+@customElement("display-graph")
 export class Graph extends LitElementWw {
   @property() width: number = 600;
   @property() height: number = 600;

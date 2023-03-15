@@ -40,7 +40,7 @@ export default class GraphViz extends LitElementWw {
   };
   @property({ type: Object, attribute: true, reflect: true })
   animation: AnimationType = [];
-  @property({ type: Boolean }) editable: boolean = false;
+  @property({ type: Boolean }) editable: boolean = true;
 
   @state() private svg: any = null;
   @state() private animationStatus: AnimationStatusType = "STOP";
@@ -176,7 +176,7 @@ export default class GraphViz extends LitElementWw {
           : null}
       </sl-tab-group>
 
-      <graph-graph .graph=${this.graph}></graph-graph>
+      <display-graph .graph=${this.graph}></display-graph>
     </div>`;
   }
 }

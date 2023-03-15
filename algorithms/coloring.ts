@@ -89,6 +89,6 @@ function coloredRight(colors, graph, adjacent) {
 function mapNumberToColor(number) {
   if (number == 0) return "red";
   if (number == 1) return "yellow";
-  if (number == 2) return "blue";
-  if ((number = 3)) return "green";
+  if (number == 2) return "green";
+  if ((number = 3)) return "blue";
 }
