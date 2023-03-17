@@ -1,10 +1,6 @@
 import { delay } from "../utils/sleep";
 
-export async function animateMultipleLinksBySourceTargetAndColor(
-  svg,
-  links,
-  colors
-) {
+export async function animateLinks(svg, links, colors) {
   const translate_speed = 1000;
   let gnode = svg.selectAll("g");
   for (let i = 0; i < links.length; i++) {

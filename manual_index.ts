@@ -6,8 +6,8 @@ import "./components/algo_selection";
 import "./components/edit_graph.ts";
 import "./components/graph_component.ts";
 import "./components/manual_animations.ts";
-import { animateMultipleLinksBySourceTargetAndColor } from "./graph/animateMultipleLinksBySourceTargetAndColor";
-import { animateMultipleNodesByNameAndColor } from "./graph/animateMultipleNodesByNameAndColor";
+import { animateLinks } from "./graph/animateLinks";
+import { animateNodes } from "./graph/animateNodes";
 import { resetColors } from "./graph/resetColors";
 import { setNodeSubText } from "./graph/setNodeSubText";
 import { AnimationStatusType, AnimationType, iGraph } from "./types";
@@ -40,7 +40,7 @@ export default class GraphViz extends LitElementWw {
   };
   @property({ type: Object, attribute: true, reflect: true })
   animation: AnimationType = [];
-  @property({ type: Boolean }) editable: boolean = true;
+  @property({ type: Boolean }) editable: boolean = false;
 
   @state() private svg: any = null;
   @state() private animationStatus: AnimationStatusType = "STOP";
@@ -56,13 +56,13 @@ export default class GraphViz extends LitElementWw {
         if (currentStep.type == "RESET") resetColors(this.svg);
 
         if (currentStep.type == "NODE")
-          animateMultipleNodesByNameAndColor(
+          animateNodes(
             this.svg,
             currentStep.data.names,
             currentStep.data.colors
           );
         if (currentStep.type == "LINK")
-          animateMultipleLinksBySourceTargetAndColor(
+          animateLinks(
             this.svg,
             currentStep.data.links,
             currentStep.data.colors

@@ -28,7 +28,6 @@ export function buildChart(svg, width, height, graph) {
         })
         .links(graph.links)
     )
-
     .on("tick", ticked);
 
   svg
