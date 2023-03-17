@@ -1,8 +1,9 @@
 import { delay } from "../utils/sleep";
 import { initSize } from "./buildGraph";
 
+const translate_speed = 2000;
+
 export async function animateNodes(svg, names, colors) {
-  const translate_speed = 2000;
   let gnode = svg.selectAll("g");
 
   for (let i = 0; i < names.length; i++) {
