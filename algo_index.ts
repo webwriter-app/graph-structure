@@ -21,7 +21,7 @@ export default class GraphViz extends LitElementWw {
       { name: "Ina" },
       { name: "Bob" },
       { name: "Chen" },
-      { name: "Dawg" },
+      { name: "Ana" },
       { name: "Ethan" },
       { name: "George" },
       { name: "Frank" },
@@ -30,12 +30,12 @@ export default class GraphViz extends LitElementWw {
     links: [
       { source: "Ina", target: "Bob", weight: 3 },
       { source: "Chen", target: "Bob", weight: 2 },
-      { source: "Dawg", target: "Chen", weight: 1 },
-      { source: "Dawg", target: "Frank", weight: 1 },
+      { source: "Ana", target: "Chen", weight: 1 },
+      { source: "Ana", target: "Frank", weight: 1 },
       { source: "Chen", target: "Frank", weight: 4 },
       { source: "Hanes", target: "Frank", weight: 4 },
       { source: "Hanes", target: "George", weight: 2 },
-      { source: "Dawg", target: "Ethan", weight: 1 },
+      { source: "Ana", target: "Ethan", weight: 1 },
     ],
   };
 
