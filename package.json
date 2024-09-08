@@ -5,7 +5,9 @@
   },
   "dependencies": {
     "@antv/g6": "^4.7.8",
+    "@shoelace-style/shoelace": "^2.15.1",
     "@webwriter/lit": "latest",
+    "bootstrap-icons": "^1.11.3",
     "d3": "^7.6.1",
     "lit": "^2.4.0"
   },
@@ -14,8 +16,8 @@
     "typescript": "^4.8.4",
     "vite": "^3.1.6"
   },
-  "name": "ww-manualgraphviz",
-  "version": "0.11.0",
+  "name": "@webwriter/manualgraphviz",
+  "version": "0.12.0",
   "keywords": [
     "webwriter",
     "webwriter-widget"
@@ -23,6 +25,10 @@
   "author": "Ferdinand Baumgarten <ferdinand.baumgarten@rwth-aachen.de>",
   "license": "MIT",
   "main": "manual_index.ts",
+  "exports": {
+    "./widgets/webwriter-manualgraphviz": "./manual_index.ts",
+    "./widgets/webwriter-algographviz": "./algo_index.ts"
+  },
   "repository": {
     "type": "git",
     "url": "git@git.rwth-aachen.de:learntech-lufgi9/bama/webwriter/ww-graph-visualization.git"
