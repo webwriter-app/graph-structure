@@ -6,10 +6,10 @@
   "dependencies": {
     "@antv/g6": "^4.7.8",
     "@shoelace-style/shoelace": "^2.15.1",
-    "@webwriter/lit": "latest",
+    "@webwriter/lit": "^2.0.0",
     "bootstrap-icons": "^1.11.3",
     "d3": "^7.6.1",
-    "lit": "^2.4.0"
+    "lit": "^3.1.4"
   },
   "devDependencies": {
     "tailwindcss": "^3.2.7",
@@ -26,8 +26,10 @@
   "license": "MIT",
   "main": "manual_index.ts",
   "exports": {
-    "./widgets/webwriter-manualgraphviz": "./manual_index.ts",
-    "./widgets/webwriter-algographviz": "./algo_index.ts"
+    "./widgets/webwriter-manualgraphviz.*": {
+      "source": "./manual_index.ts",
+      "default": "./dist/widgets/webwriter-manualgraphviz.*"
+    }
   },
   "repository": {
     "type": "git",

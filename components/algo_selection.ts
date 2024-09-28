@@ -27,20 +27,20 @@ import SlOption from '@shoelace-style/shoelace/dist/components/option/option.com
 
 @customElement('algo-selection')
 export class AlgoSelection extends LitElementWw {
-    @property({ type: String }) currentTab: string = 'algo';
-    @property({ type: String }) animationStatus: AnimationStatusType = 'STOP';
-    @property({ type: Object }) event: CustomEvent = null;
+    @property({ type: String }) accessor currentTab: string = 'algo';
+    @property({ type: String }) accessor animationStatus: AnimationStatusType = 'STOP';
+    @property({ type: Object }) accessor event: CustomEvent = null;
 
-    @property({ type: Object }) graph: iGraph = {
+    @property({ type: Object }) accessor graph: iGraph = {
         newLink: '',
         nodes: [],
         links: [],
     };
 
-    @state() private action: string = '';
-    @state() private target: string = '';
-    @property({ type: String }) algorithm: 'DFS' | 'SPANTREE' | 'DIJKSTRA' | 'CYCLE' | 'BFS' | 'COLORING' = 'SPANTREE';
-    @property({ type: Boolean }) editable: boolean = false;
+    @state() private accessor action: string = '';
+    @state() private accessor target: string = '';
+    @property({ type: String }) accessor algorithm: 'DFS' | 'SPANTREE' | 'DIJKSTRA' | 'CYCLE' | 'BFS' | 'COLORING' = 'SPANTREE';
+    @property({ type: Boolean }) accessor editable: boolean = false;
 
     protected updated(_changedProperties: PropertyValueMap<any> | Map<PropertyKey, unknown>): void {
         const e = this.event;

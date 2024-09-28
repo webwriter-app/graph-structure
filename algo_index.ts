@@ -25,7 +25,8 @@ import { AlgoSelection } from './components/algo_selection';
 
 @customElement('webwriter-algographviz')
 export default class GraphViz extends LitElementWw {
-    @property({ type: Object }) graph: iGraph = {
+    @property({ type: Object }) 
+    private accessor graph: iGraph = {
         newLink: '',
         nodes: [
             { name: 'Ina' },
@@ -49,16 +50,16 @@ export default class GraphViz extends LitElementWw {
         ],
     };
 
-    @property({ type: Boolean }) editable: boolean = false;
+    @property({ type: Boolean }) private accessor  editable: boolean = false;
     @property({ type: String, attribute: true, reflect: true })
-    private algorithm: 'DFS' | 'SPANTREE' | 'DIJKSTRA' | 'CYCLE' | 'BFS' | 'COLORING' = 'SPANTREE';
+    private accessor algorithm: 'DFS' | 'SPANTREE' | 'DIJKSTRA' | 'CYCLE' | 'BFS' | 'COLORING' = 'SPANTREE';
 
-    @state() private svg: any = null;
-    @state() private animation: AnimationType = [];
-    @state() private animationStatus: AnimationStatusType = 'STOP';
-    @state() private animationPosition: number = 0;
-    @state() private currentTab: string = 'algo';
-    @state() private event: CustomEvent = null;
+    @state() private accessor svg: any = null;
+    @state() private accessor animation: AnimationType = [];
+    @state() private accessor animationStatus: AnimationStatusType = 'STOP';
+    @state() private accessor animationPosition: number = 0;
+    @state() private accessor currentTab: string = 'algo';
+    @state() private accessor event: CustomEvent = null;
 
     public static get scopedElements() {
         return {

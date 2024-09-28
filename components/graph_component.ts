@@ -9,15 +9,15 @@ import { buildChart } from '../graph/buildGraph';
 
 @customElement('display-graph')
 export class Graph extends LitElementWw {
-    @property() width: number = 600;
-    @property() height: number = 600;
+    @property() accessor width: number = 600;
+    @property() accessor height: number = 600;
 
     private _graph: iGraph = {
         newLink: '',
         nodes: [],
         links: [],
     };
-    @property({ type: Object })
+    // @property({ type: Object })
     public get graph() {
         return this._graph;
     }

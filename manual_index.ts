@@ -57,7 +57,7 @@ export default class GraphViz extends LitElementWw {
         ],
     };
 
-    @property({ type: Object, attribute: true, reflect: true })
+    // @property({ type: Object, attribute: false})
     public get graph() {
         return this._graph;
     }
@@ -80,19 +80,19 @@ export default class GraphViz extends LitElementWw {
     }
 
     @property({ type: Object, attribute: true, reflect: true })
-    animation: AnimationType = [];
-    @property({ type: Boolean }) editable: boolean = false;
+    accessor animation: AnimationType = [];
+    @property({ type: Boolean }) accessor editable: boolean = false;
 
-    @state() private svg: any = null;
-    @state() private animationStatus: AnimationStatusType = 'STOP';
-    @state() private animationPosition: number = 0;
-    @state() private currentTab: string = 'manual';
-    @state() private event: CustomEvent = null;
+    @state() private accessor svg: any = null;
+    @state() private accessor animationStatus: AnimationStatusType = 'STOP';
+    @state() private accessor animationPosition: number = 0;
+    @state() private accessor currentTab: string = 'manual';
+    @state() private accessor event: CustomEvent = null;
 
-    @state() private mode: 'edit' | 'animation' | 'execute' = 'edit';
+    @state() private accessor mode: 'edit' | 'animation' | 'execute' = 'edit';
 
     @property({ type: String, attribute: true, reflect: true })
-    private algorithm: 'DFS' | 'SPANTREE' | 'DIJKSTRA' | 'CYCLE' | 'BFS' | 'COLORING' = 'SPANTREE';
+    private accessor algorithm: 'DFS' | 'SPANTREE' | 'DIJKSTRA' | 'CYCLE' | 'BFS' | 'COLORING' = 'SPANTREE';
 
     public static get scopedElements() {
         return {

@@ -11,17 +11,17 @@ import SlInput from '@shoelace-style/shoelace/dist/components/input/input.compon
 
 @customElement('edit-graph')
 export class EditGraph extends LitElementWw {
-    @property({ type: Object }) graph: iGraph = {
+    @property({ type: Object }) accessor graph: iGraph = {
         newLink: '',
         nodes: [],
         links: [],
     };
-    @property({ type: Object }) event: CustomEvent = null;
+    @property({ type: Object }) accessor event: CustomEvent = null;
 
-    @state() action: string = '';
-    @state() private selectedNode: string = '';
-    @state() private newLinkWeight: number = 1;
-    @state() private newNode: string = '';
+    @state() accessor action: string = '';
+    @state() private accessor selectedNode: string = '';
+    @state() private accessor newLinkWeight: number = 1;
+    @state() private accessor newNode: string = '';
 
     public static get scopedElements() {
         return {

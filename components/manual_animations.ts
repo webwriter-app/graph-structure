@@ -27,17 +27,17 @@ import trash3 from 'bootstrap-icons/icons/trash3.svg';
 
 @customElement('manual-animations')
 export class ManualAnimations extends LitElementWw {
-    @property({ type: Object }) svg: any = null;
-    @property({ type: Boolean, reflect: true }) editable: boolean = false;
-    @property({ type: String }) currentTab: string = 'algo';
-    @property({ type: String }) animationStatus: AnimationStatusType = 'STOP';
-    @property({ type: Object }) event: CustomEvent = null;
-    @property() oldRecordedAnimation: AnimationType = [];
-    @state() action: string = 'RECORDING';
-    @state() recordedAnimation: AnimationType = [];
-    @state() animationColor: string = '#4a90e2';
-    @state() recording: 'NODE' | 'LINK' | '' = '';
-    @state() currentAnimationBeingEditet: undefined | number = undefined;
+    @property({ type: Object }) accessor svg: any = null;
+    @property({ type: Boolean, reflect: true }) accessor editable: boolean = false;
+    @property({ type: String }) accessor currentTab: string = 'algo';
+    @property({ type: String }) accessor animationStatus: AnimationStatusType = 'STOP';
+    @property({ type: Object }) accessor event: CustomEvent = null;
+    @property() accessor oldRecordedAnimation: AnimationType = [];
+    @state() accessor action: string = 'RECORDING';
+    @state() accessor recordedAnimation: AnimationType = [];
+    @state() accessor animationColor: string = '#4a90e2';
+    @state() accessor recording: 'NODE' | 'LINK' | '' = '';
+    @state() accessor currentAnimationBeingEditet: undefined | number = undefined;
 
     public static get scopedElements() {
         return {
