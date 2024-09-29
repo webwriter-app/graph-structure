@@ -17,10 +17,10 @@ export class Graph extends LitElementWw {
         nodes: [],
         links: [],
     };
-    // @property({ type: Object })
     public get graph() {
         return this._graph;
     }
+    @property({ type: Object })
     public set graph(value) {
         if (!value) {
             this._graph = {

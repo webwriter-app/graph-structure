@@ -57,10 +57,10 @@ export default class GraphViz extends LitElementWw {
         ],
     };
 
-    // @property({ type: Object, attribute: false})
     public get graph() {
         return this._graph;
     }
+    @property({ type: Object })
     public set graph(value) {
         if (!value) {
             this._graph = {

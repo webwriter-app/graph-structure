@@ -1,7 +1,6 @@
 {
   "scripts": {
-    "dev": "vite --open",
-    "build": "vite build"
+    "prepublishOnly": "npx @webwriter/build"
   },
   "dependencies": {
     "@antv/g6": "^4.7.8",
@@ -17,7 +16,7 @@
     "vite": "^3.1.6"
   },
   "name": "@webwriter/manualgraphviz",
-  "version": "0.12.0",
+  "version": "1.0.0",
   "keywords": [
     "webwriter",
     "webwriter-widget"
@@ -35,5 +34,5 @@
     "type": "git",
     "url": "git@git.rwth-aachen.de:learntech-lufgi9/bama/webwriter/ww-graph-visualization.git"
   },
-  "description": ""
+  "description": "Visualize graphs, simulate common graph algorithms (Kruskal, Dijkstra, BFS, DFS, etc.), and record your own graph animations."
 }
